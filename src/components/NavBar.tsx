@@ -2,7 +2,7 @@ import { Home, Calendar, FileText, User, Info } from 'lucide-react';
 
 const NavBar = () => {
   return (
-    <header className="bg-green-100 p-8 relative">
+    <header className="bg-green-200 p-8 relative">
       {/* SVG Icon on the Left */}
       <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
@@ -15,11 +15,11 @@ const NavBar = () => {
       {/* Navigation Links */}
       <nav className="container mx-auto flex justify-center">
         <ul className="flex space-x-6">
-          <li><a href="/patient/home" className="flex items-center text-green-800 hover:text-green-600"><Home className="w-5 h-5 mr-1" /> Home</a></li>
-          <li><a href="/patient/appointment/" className="flex items-center text-green-800 hover:text-green-600"><Calendar className="w-5 h-5 mr-1" /> Appointment</a></li>
-          <li><a href="#" className="flex items-center text-green-800 hover:text-green-600"><FileText className="w-5 h-5 mr-1" /> Reporting</a></li>
-          <li><a href="#" className="flex items-center text-green-800 hover:text-green-600"><User className="w-5 h-5 mr-1" /> Digital Profile</a></li>
-          <li><a href="#" className="flex items-center text-green-800 hover:text-green-600"><Info className="w-5 h-5 mr-1" /> About</a></li>
+          <li><a href="/patient/home" className="flex items-center text-black hover:text-green-600"><Home className="w-5 h-5 mr-1" /> Home</a></li>
+          <li><a href="/patient/appointment/" className="flex items-center text-black hover:text-green-600"><Calendar className="w-5 h-5 mr-1" /> Appointment</a></li>
+          <li><a href="#" className="flex items-center text-black hover:text-green-600"><FileText className="w-5 h-5 mr-1" /> Reporting</a></li>
+          <li><a href="#" className="flex items-center text-black hover:text-green-600"><User className="w-5 h-5 mr-1" /> Digital Profile</a></li>
+          <li><a href="#" className="flex items-center text-black hover:text-green-600"><Info className="w-5 h-5 mr-1" /> About</a></li>
         </ul>
       </nav>
     </header>

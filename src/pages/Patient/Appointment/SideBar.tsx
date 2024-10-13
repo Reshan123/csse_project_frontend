@@ -2,7 +2,7 @@ import { Calendar, CheckCircle } from 'lucide-react';
 
 const SideBar = () => {
   return (
-    <div className="w-1/4 h-[610px] p-8 m-4 bg-green-100 shadow-md flex flex-col justify-center items-center rounded-xl">
+    <div className="w-1/4 h-screen p-8 bg-green-200 shadow-md flex flex-col justify-center items-center">
       <h2 className="text-xl font-bold mb-4">Appointment Dashboard</h2>
       
       <button className="flex items-center mb-2 p-4 hover:bg-white rounded-xl transition-colors"
