@@ -1,83 +1,149 @@
-import React, { useRef, useEffect, useState } from "react";
-import { Download } from "lucide-react";
-import QRCode from "react-qr-code";
+import axios from "axios";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
-interface QRCodeGeneratorProps {
-  userId: string;
-}
+// Styles
+import "./QrStyles.css";
 
-const QRCodeGenerator: React.FC<QRCodeGeneratorProps> = ({ userId }) => {
-  const qrCodeWrapperRef = useRef<HTMLDivElement>(null); // Ref for the QRCode container div
-  const canvasRef = useRef<HTMLCanvasElement>(null); // Ref for Canvas
-  const [value, setValue] = useState<string>("");
+// Qr Scanner
+import QrScanner from "qr-scanner";
+import QrFrame from "../assets/qr-frame.svg";
+import { PlusIcon, QrCodeIcon } from "@heroicons/react/24/outline";
+import { validateUser } from "../api/Register/ValidateApi";
+
+const QrReader = () => {
+  const navigate = useNavigate(); // Initialize navigate for navigation
+  const scanner = useRef<QrScanner>();
+  const videoEl = useRef<HTMLVideoElement>(null);
+  const qrBoxEl = useRef<HTMLDivElement>(null);
+  const [qrOn, setQrOn] = useState<boolean>(false); // Start with QR scanner off
+  const [scannedResult, setScannedResult] = useState<string | undefined>("");
+
+  const onScanSuccess = async (result: QrScanner.ScanResult) => {
+    console.log(result);
+    setScannedResult(result?.data);
+
+    // Validate user ID before navigating
+    if (result?.data) {
+      try {
+        const validationResponse = await validateUser(result.data);
+        if (validationResponse.valid) {
+          navigate(`/patient/home/${result.data}`); 
+        } else {
+          alert("Invalid User ID. Please try again.");
+        }
+      } catch (error) {
+        alert(
+          error instanceof Error
+            ? error.message
+            : "An error occurred during validation."
+        );
+      }
+    }
+  };
+
+  const onScanFail = (err: string | Error) => {
+    console.log(err);
+  };
 
   useEffect(() => {
-    setValue(userId);
-  }, [userId]);
+    // Start the scanner if qrOn is true
+    if (qrOn && videoEl.current && !scanner.current) {
+      scanner.current = new QrScanner(videoEl.current, onScanSuccess, {
+        onDecodeError: onScanFail,
+        preferredCamera: "environment",
+        highlightScanRegion: true,
+        highlightCodeOutline: true,
+        overlay: qrBoxEl.current || undefined,
+      });
 
-  const downloadQRCode = () => {
-    const svg = qrCodeWrapperRef.current?.querySelector("svg"); // Find the SVG within the wrapper div
-    const canvas = canvasRef.current;
-    if (!svg || !canvas) return;
+      scanner.current.start().catch((err) => {
+        console.error(err);
+        setQrOn(false);
+      });
+    }
 
-    // Convert the SVG to a canvas
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const img = new Image();
-    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
-
-    img.onload = () => {
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-
-        // Trigger download of the canvas as a PNG
-        const image = canvas
-          .toDataURL("image/png")
-          .replace("image/png", "image/octet-stream");
-        const link = document.createElement("a");
-        link.download = `qr-code-${userId || "empty"}.png`;
-        link.href = image;
-        link.click();
+    // Cleanup the scanner on unmount or when qrOn is false
+    return () => {
+      if (scanner.current) {
+        scanner.current.stop();
+        scanner.current.destroy(); // Optional: Release resources
+        scanner.current = undefined; // Reset scanner instance
       }
     };
+  }, [qrOn]);
+
+  const handleScanClick = () => {
+    setQrOn(true);
+  };
+
+  const handleCancelClick = () => {
+    setQrOn(false); // Stop the QR scanner
+    if (scanner.current) {
+      scanner.current.stop(); // Ensure scanner stops
+    }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl m-4 transition-all duration-300 ease-in-out hover:shadow-lg">
-      <div className="p-8">
-        <div className="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-1">
-          QR Code Generator
-        </div>
-        <h2 className="block mt-1 text-lg leading-tight font-medium text-black">
-          User ID: {userId || "Not provided"}
-        </h2>
-        <div className="mt-4 flex justify-center bg-gray-100 p-4 rounded-lg">
-          <div className="relative" ref={qrCodeWrapperRef}>
-            {" "}
-            {/* Wrapper for the QRCode */}
-            <QRCode value={value} size={200} />
-            <canvas
-              ref={canvasRef}
-              width={200}
-              height={200}
-              style={{ display: "none" }}
+    <div className="text-center">
+      {!qrOn && ( // Render elements only if not in scan mode
+        <>
+          <div className="flex-shrink-0">
+            <QrCodeIcon
+              aria-hidden="true"
+              className="h-25 w-25 text-gray-400"
             />
           </div>
-        </div>
-        <div className="mt-6 flex justify-center">
+
+          <p className="mt-1 text-sm text-gray-500">
+            Scan patient ID to view medical records
+          </p>
+          <div className="mt-6">
+            <button
+              type="button"
+              onClick={handleScanClick}
+              className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            >
+              <PlusIcon aria-hidden="true" className="-ml-0.5 mr-1.5 h-5 w-5" />
+              Scan QR
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* Show the QR scanner when the button is clicked */}
+      {qrOn && (
+        <div className="qr-reader w-full h-80 mx-auto relative md:w-full rounded-md">
+          <video
+            ref={videoEl}
+            className="w-full h-full object-cover rounded-md"
+          ></video>
+          <div ref={qrBoxEl} className="qr-box w-full left-0 !important">
+            <img
+              src={QrFrame}
+              alt="Qr Frame"
+              className="qr-frame absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+            />
+          </div>
+
+          {scannedResult && (
+            <p className="absolute top-0 left-0 z-50 text-white">
+              Scanned Result: {scannedResult}
+            </p>
+          )}
+
+          {/* Cancel Button */}
           <button
-            onClick={downloadQRCode}
-            disabled={!userId}
-            className="flex items-center px-4 py-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 transition-colors duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+            type="button"
+            onClick={handleCancelClick}
+            className="absolute bottom-4 left-1/2 transform -translate-x-1/2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
           >
-            <Download className="mr-2" size={20} />
-            Download QR Code
+            Cancel
           </button>
         </div>
-      </div>
+      )}
     </div>
   );
 };
 
-export default QRCodeGenerator;
+export default QrReader;
