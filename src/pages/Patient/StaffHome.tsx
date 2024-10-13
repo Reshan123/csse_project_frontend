@@ -4,9 +4,12 @@ import {
   CheckCircleIcon,
   BanknotesIcon,
   ChevronRightIcon,
+  PlusIcon,
+  QrCodeIcon,
 } from "@heroicons/react/24/outline";
 import { BriefcaseMedical, ClipboardPlus, PersonStanding, ScaleIcon, SyringeIcon } from "lucide-react";
 import Table from "../../components/Table";
+import QrReader from "../../components/QRreader";
 
 const StaffHome = () => {
 
@@ -24,7 +27,7 @@ const StaffHome = () => {
       amount: "590",
     },
     {
-      name: "Doctor Appontments",
+      name: "Doctor Appointments",
       href: "#",
       icon: ClipboardPlus,
       amount: "600",
@@ -121,15 +124,16 @@ const StaffHome = () => {
 
         <div className="mt-8">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-lg font-medium leading-6 text-gray-900">
-              Overview
-            </h2>
+
             <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {/* Card */}
+              {/* QR Scan */}
+              <div className="overflow-hidden rounded-lg bg-white shadow p-2">
+<QrReader></QrReader>
+              </div>
               {cards.map((card) => (
                 <div
                   key={card.name}
-                  className="overflow-hidden rounded-lg bg-white shadow"
+                  className="overflow-hidden rounded-lg bg-white shadow p-10"
                 >
                   <div className="p-5">
                     <div className="flex items-center">

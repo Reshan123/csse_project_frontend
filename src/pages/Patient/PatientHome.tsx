@@ -32,9 +32,16 @@ import {
   QuestionMarkCircleIcon,
   UserIcon,
 } from "@heroicons/react/20/solid";
-import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import {
+  Bars3Icon,
+  BellIcon,
+  PlusIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
 import Table from "../../components/Table";
+import { removeUser } from "../../api/Register/RemoveUserApi";
+import { useParams } from "react-router-dom";
 
 const user = {
   name: "Whitney Francis",
@@ -94,13 +101,32 @@ const timeline = [
   },
 ];
 
-function classNames(...classes:any) {
+function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function PatientHome() {
-    const [userId, setUserId] = useState("test");
-    const [medicalRecordAvailable, setMedicalRecordAvailable] = useState(true);
+  const { id } = useParams();
+  const [userId, setUserId] = useState(id);
+  const [medicalRecordAvailable, setMedicalRecordAvailable] = useState(true);
+console.log(id);
+    
+  useEffect(() => {
+    id == undefined && setUserId(id);
+  }, [id]);
+
+  const handleRemove = async (employeeId: string) => {
+    try {
+      // Call the async function to remove the user
+      await removeUser(employeeId);
+
+      alert("User removed successfully");
+    } catch (error) {
+      console.error("Error removing user:", error);
+      alert("Failed to remove user. Please try again.");
+    }
+  };
+
   return (
     <>
       {/*
@@ -135,17 +161,14 @@ export default function PatientHome() {
                     Ricardo Cooper
                   </h1>
                   <p className="text-sm font-medium text-gray-500">
-                    Applied for{" "}
-                    <a href="#" className="text-gray-900">
-                      Front End Developer
-                    </a>{" "}
-                    on <time dateTime="2020-08-25">August 25, 2020</time>
+                    {userId}
                   </p>
                 </div>
               </div>
               <div className="mt-6 flex flex-col-reverse justify-stretch space-y-4 space-y-reverse sm:flex-row-reverse sm:justify-end sm:space-x-3 sm:space-y-0 sm:space-x-reverse md:mt-0 md:flex-row md:space-x-3">
                 <button
                   type="button"
+                  onClick={() => handleRemove(userId)}
                   className="inline-flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-red-600 hover:bg-gray-50"
                 >
                   Remove
@@ -274,7 +297,7 @@ export default function PatientHome() {
                       id="timeline-title"
                       className="text-lg font-medium text-gray-900"
                     >
-                     Appointments
+                      Appointments
                     </h2>
 
                     {/* Activity Feed */}
@@ -327,7 +350,7 @@ export default function PatientHome() {
                         ))}
                       </ul>
                     </div> */}
-                                      <Table></Table>
+                    <Table></Table>
                     <div className="mt-6 flex flex-col justify-stretch">
                       <button
                         type="button"
@@ -342,21 +365,38 @@ export default function PatientHome() {
             ) : (
               <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">
                 <div className="text-center">
-                  <p className="text-base font-semibold text-indigo-600"></p>
-                  <h1 className="mt-4 text-3xl font-bold tracking-tight text-gray-900 sm:text-5xl">
-                    Medical Record Unavailable
-                  </h1>
-                  <p className="mt-6 text-base leading-7 text-gray-600">
-                    Sorry, we couldn’t find medical records of the patient you’re looking for.
+                  <svg
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    className="mx-auto h-12 w-12 text-gray-400"
+                  >
+                    <path
+                      d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"
+                      strokeWidth={2}
+                      vectorEffect="non-scaling-stroke"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <h3 className="mt-2 text-sm font-semibold text-gray-900">
+                    No medical record found
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Create a new medical record to get started.
                   </p>
-                  <div className="mt-10 flex items-center justify-center gap-x-6">
-                    <a
-                      href="#"
-                      className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  <div className="mt-6">
+                    <button
+                      type="button"
+                      className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
-                      Add a medical record
-                    </a>
-                    
+                      <PlusIcon
+                        aria-hidden="true"
+                        className="-ml-0.5 mr-1.5 h-5 w-5"
+                      />
+                      Add medical record
+                    </button>
                   </div>
                 </div>
               </main>

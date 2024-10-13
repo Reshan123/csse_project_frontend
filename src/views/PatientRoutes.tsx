@@ -10,7 +10,7 @@ const PatientRoutes = () => {
        <>
        {/* <NavBar/> */}
        <Routes>
-            <Route path="/home" element={<PatientHome/>}/>
+            <Route path="/home/:id" element={<PatientHome/>}/>
             <Route path="/appointment/*" element={<AppointmentRoutes/>}/>
        </Routes>
        </>
