@@ -26,11 +26,15 @@ const Home = () => {
           <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md">
             <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <button className="flex flex-col items-center justify-center p-4 bg-teal-200 rounded-lg transition-colors hover:bg-teal-300">
+              <button className="flex flex-col items-center justify-center p-4 bg-teal-200 rounded-lg transition-colors hover:bg-teal-300"
+                onClick={() => window.location.href = '/patient/appointment/schedule/form'}
+              >
                 <Calendar size={32} className="text-teal-600 mb-2" />
                 <span className="text-sm font-medium">Schedule Appointment</span>
               </button>
-              <button className="flex flex-col items-center justify-center p-4 bg-teal-100 rounded-lg transition-colors hover:bg-teal-200">
+              <button className="flex flex-col items-center justify-center p-4 bg-teal-100 rounded-lg transition-colors hover:bg-teal-200"
+                onClick={() => window.location.href = '/patient/appointment/scheduled'}
+              >
                 <Clock size={32} className="text-teal-600 mb-2" />
                 <span className="text-sm font-medium">View Upcoming</span>
               </button>

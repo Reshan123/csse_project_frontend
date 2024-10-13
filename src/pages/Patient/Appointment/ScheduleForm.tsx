@@ -1,84 +1,159 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { Calendar, User, Stethoscope, FileText, Building } from 'lucide-react';
 
 const ScheduleForm = () => {
-    const [date, setDate] = useState('');
-    const [time, setTime] = useState('');
-    const [doctor, setDoctor] = useState('');
-    const [reason, setReason] = useState('');
+  const [appointment, setAppointment] = useState({
+    appointmentDate: '',
+    patientName: '',
+    doctor: '',
+    reason: '',
+    department: '',
+    status: 'Pending',
+  });
+
+  const departments = [
+    'Cardiology', 'Neurology', 'Orthopedics', 'Pediatrics', 'Oncology',
+    'Gynecology', 'Dermatology', 'Ophthalmology', 'Psychiatry', 'General Surgery'
+  ];
+
+  const doctors = [
+    'Dr. Emily Johnson', 'Dr. Michael Chen', 'Dr. Sarah Patel', 'Dr. David Kim',
+    'Dr. Lisa Rodriguez', 'Dr. James Wilson', 'Dr. Maria Garcia', 'Dr. Robert Taylor'
+  ];
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setAppointment(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:8080/api/appointments/addAppointment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(appointment), // Send the appointment data as JSON
+      });
   
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      console.log({ date, time, doctor, reason });
-    };
-  
-    return (
-      <div className="bg-green-100 p-6 rounded-xl shadow-lg max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold mb-6 text-center">Schedule New Appointment</h2>
-        <div className="flex">
-          <div className="w-1/3">
-            <img src="/api/placeholder/200/300" alt="Doctor cartoon" className="w-full" />
-          </div>
-          <form onSubmit={handleSubmit} className="w-2/3 pl-6">
-            <div className="mb-4">
-              <label htmlFor="date" className="block mb-1 font-medium">Date</label>
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Appointment scheduled successfully:', result);
+      } else {
+        console.error('Failed to schedule appointment:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error while scheduling appointment:', error);
+    }
+    console.log(appointment);
+  };
+
+  return (
+    <div className="bg-teal-800 min-h-screen p-5 sm:p-8">
+      <div className="bg-white p-8 rounded-xl shadow-lg mt-5 w-full max-w-full">
+        <div className="flex flex-col md:flex-row items-center mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center md:text-left text-gray-800">Schedule New Appointment</h2>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="appointmentDate" className="block mb-2 font-medium text-gray-700 flex items-center">
+                <Calendar className="mr-2 text-teal-600" size={20} />
+                Appointment Date & Time
+              </label>
               <input
-                type="date"
-                id="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full p-2 border rounded"
+                type="datetime-local"
+                id="appointmentDate"
+                name="appointmentDate"
+                value={appointment.appointmentDate}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition duration-300"
                 required
               />
             </div>
-            <div className="mb-4">
-              <label htmlFor="time" className="block mb-1 font-medium">Time</label>
+            <div>
+              <label htmlFor="patientName" className="block mb-2 font-medium text-gray-700 flex items-center">
+                <User className="mr-2 text-teal-600" size={20} />
+                Patient Name
+              </label>
               <input
-                type="time"
-                id="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className="w-full p-2 border rounded"
+                type="text"
+                id="patientName"
+                name="patientName"
+                value={appointment.patientName}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition duration-300"
                 required
               />
             </div>
-            <div className="mb-4">
-              <label htmlFor="doctor" className="block mb-1 font-medium">Doctor</label>
+            <div>
+              <label htmlFor="department" className="block mb-2 font-medium text-gray-700 flex items-center">
+                <Building className="mr-2 text-teal-600" size={20} />
+                Department
+              </label>
               <select
-                id="doctor"
-                value={doctor}
-                onChange={(e) => setDoctor(e.target.value)}
-                className="w-full p-2 border rounded"
+                id="department"
+                name="department"
+                value={appointment.department}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition duration-300"
                 required
               >
-                <option value="">select</option>
-                <option value="dr-smith">Dr. Smith</option>
-                <option value="dr-johnson">Dr. Johnson</option>
+                <option value="">Select Department</option>
+                {departments.map((dept, index) => (
+                  <option key={index} value={dept}>{dept}</option>
+                ))}
               </select>
             </div>
-            <div className="mb-6">
-              <label htmlFor="reason" className="block mb-1 font-medium">Reason to visit</label>
-              <textarea
-                id="reason"
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                className="w-full p-2 border rounded"
-                placeholder="Enter the reason"
-                rows={3}
+            <div>
+              <label htmlFor="doctor" className="block mb-2 font-medium text-gray-700 flex items-center">
+                <Stethoscope className="mr-2 text-teal-600" size={20} />
+                Doctor
+              </label>
+              <select
+                id="doctor"
+                name="doctor"
+                value={appointment.doctor}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition duration-300"
                 required
-              ></textarea>
+              >
+                <option value="">Select Doctor</option>
+                {doctors.map((doc, index) => (
+                  <option key={index} value={doc}>{doc}</option>
+                ))}
+              </select>
             </div>
-            <div className="flex justify-end space-x-4">
-              <button type="submit" className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                Submit
-              </button>
-              <button type="button" className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-                Cancel
-              </button>
-            </div>
-          </form>
-        </div>
+          </div>
+          <div>
+            <label htmlFor="reason" className="block mb-2 font-medium text-gray-700 flex items-center">
+              <FileText className="mr-2 text-teal-600" size={20} />
+              Reason for Visit
+            </label>
+            <textarea
+              id="reason"
+              name="reason"
+              value={appointment.reason}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition duration-300"
+              rows={4}
+              required
+            ></textarea>
+          </div>
+          <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-4">
+            <button type="button" className="w-full sm:w-auto px-6 py-3 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition duration-300">
+              Cancel
+            </button>
+            <button type="submit" className="w-full sm:w-auto px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition duration-300">
+              Schedule Appointment
+            </button>
+          </div>
+        </form>
       </div>
-    );
-  };
-  
-  export default ScheduleForm;
+    </div>
+  );
+};
+
+export default ScheduleForm;

@@ -10,7 +10,6 @@ const AppointmentRoutes = () => {
 
   return (
     <>
-      <div className="flex">
         {/* <SideBar/> */}
         <div>
           <Routes>
@@ -20,7 +19,6 @@ const AppointmentRoutes = () => {
               <Route path="/schedule/form" element={<ScheduleForm/>}/>
           </Routes>
         </div>
-      </div>
     </>
   );
 };
