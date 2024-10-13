@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import NavBar from "../components/NavBar";
-import HomePage from "./Pages/Patient/HomePage";
+import HomePage from "../pages/Patient/HomePage";
 
 const PatientRoutes = () => {
 
