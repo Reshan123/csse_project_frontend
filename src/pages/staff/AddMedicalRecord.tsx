@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 import { MedicalRecord } from '../../types/MedicalRecord';
 
@@ -27,14 +28,21 @@ const MedicalRecordForm: React.FC = () => {
     setFormData({ ...formData, [field]: values });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Here you would typically send the data to your backend
+  
+    try {
+      const response = await axios.post('http://localhost:8000/api/medicalRecords/addRecord', formData);
+      console.log('Form submitted successfully:', response.data);
+      // You can also handle further actions like resetting the form or displaying a success message
+    } catch (error) {
+      console.error('Error submitting form:', error);
+     console.log(error)
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
+    <form onSubmit={handleSubmit} className="w-1/2 mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">Medical Record Form</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
