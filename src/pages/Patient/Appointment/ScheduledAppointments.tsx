@@ -1,19 +1,23 @@
-import { useState } from 'react';
+import { useContext } from 'react';
 import { ChevronRight, Calendar, History } from 'lucide-react';
+import { AppointmentsContext } from '../../../contexts/AppointmentContext';
 
 const AppointmentMainContent = () => {
-  const [date, setDate] = useState(new Date());
+  const appointmentsContext = useContext(AppointmentsContext);
 
-  const appointments = [
-    { id: 1, date: new Date(2024, 8, 25, 10, 0), doctor: 'Dr. Krishantha', department: 'Cardiology' },
-    { id: 2, date: new Date(2024, 8, 28, 14, 30), doctor: 'Dr. Smith', department: 'Neurology' },
-    { id: 3, date: new Date(2024, 9, 5, 11, 15), doctor: 'Dr. Johnson', department: 'Orthopedics' },
-  ];
+  if (!appointmentsContext) {
+    return <div>Error: AppointmentsContext is undefined</div>;
+  }
 
-  // const upcomingAppointments = appointments.filter(apt => apt.date > new Date());
+  const { appointments, loading } = appointmentsContext;
+
+  // Filter upcoming appointments
+  const upcomingAppointments = appointments.filter((apt) => new Date(apt.appointmentDate) > new Date());
+  // Filter past appointments
+  const pastAppointments = appointments.filter((apt) => new Date(apt.appointmentDate) <= new Date());
 
   return (
-    <div className="bg-teal-800 flex flex-col lg:flex-row gap-6 p-6">
+    <div className="bg-teal-800 flex flex-col lg:flex-row gap-6 p-6 h-screen">
       {/* Left section with upcoming appointments and appointment history */}
       <div className="lg:w-2/3 space-y-6">
         {/* Upcoming Appointments Card */}
@@ -23,14 +27,16 @@ const AppointmentMainContent = () => {
             <p className="text-sm text-gray-500">Manage your scheduled appointments</p>
           </div>
           <div className="p-4">
-            {appointments.length > 0 ? (
-              appointments.map((apt) => (
-                <div key={apt.id} className="flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors">
+            {loading ? (
+              <p className="text-center py-4 text-gray-500">Loading appointments...</p>
+            ) : upcomingAppointments.length > 0 ? (
+              upcomingAppointments.map((apt) => (
+                <div key={apt.aptNo} className="flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors">
                   <div>
-                    <p className="font-semibold text-gray-800">{apt.doctor}</p>
+                    <p className="font-semibold text-gray-800">{apt.docName}</p>
                     <p className="text-sm text-gray-500">{apt.department}</p>
                     <p className="text-sm text-gray-600">
-                      {apt.date.toLocaleDateString()} at {apt.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(apt.appointmentDate).toLocaleDateString()} at {new Date(apt.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                   <ChevronRight className="text-gray-400" />
@@ -60,7 +66,24 @@ const AppointmentMainContent = () => {
             <p className="text-sm text-gray-500">View your past appointments</p>
           </div>
           <div className="p-4">
-            <p className="text-center py-4 text-gray-500">No past appointments to display</p>
+            {loading ? (
+              <p className="text-center py-4 text-gray-500">Loading appointments...</p>
+            ) : pastAppointments.length > 0 ? (
+              pastAppointments.map((apt) => (
+                <div key={apt.aptNo} className="flex items-center justify-between p-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors">
+                  <div>
+                    <p className="font-semibold text-gray-800">{apt.docName}</p>
+                    <p className="text-sm text-gray-500">{apt.department}</p>
+                    <p className="text-sm text-gray-600">
+                      {new Date(apt.appointmentDate).toLocaleDateString()} at {new Date(apt.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                  <ChevronRight className="text-gray-400" />
+                </div>
+              ))
+            ) : (
+              <p className="text-center py-4 text-gray-500">No past appointments to display</p>
+            )}
           </div>
         </div>
       </div>
@@ -77,7 +100,7 @@ const AppointmentMainContent = () => {
             <p className="text-sm text-gray-500">View your scheduled appointments</p>
           </div>
           <div className="p-4">
-            {/* Add your calendar component or calendar display logic here */}
+            {/* Placeholder for calendar */}
             <p className="text-center py-4 text-gray-500">Calendar feature coming soon</p>
           </div>
         </div>

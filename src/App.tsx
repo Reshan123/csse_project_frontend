@@ -4,7 +4,7 @@ import StaffRoutes from "./views/StaffRoutes"
 import DoctorRoutes from "./views/DoctorRoutes"
 import Login from './components/Login'
 import SignUp from './components/Signup'
-import Layout from "./components/Layout"
+import StaffSideBar from "./components/StaffSideBar"
 import Home from "./pages/Patient/Appointment/AppointmentHome"
 import StaffHome from "./pages/Patient/StaffHome"
 import QrReader from "./components/QRreader"
@@ -18,23 +18,23 @@ function App() {
         <Route
           path="/"
           element={
-            <Layout>
+            <StaffSideBar>
               <StaffHome></StaffHome>
-            </Layout>
+            </StaffSideBar>
           }
         />
         <Route
           path="/patient/*"
           element={
-            <Layout>
+            <StaffSideBar>
               <PatientRoutes />
-            </Layout>
+            </StaffSideBar>
           }
         />
         <Route path="/staff/*" element={
-          <Layout>
+          <StaffSideBar>
           <StaffRoutes />
-          </Layout>} />
+          </StaffSideBar>} />
         <Route path="/doctor/*" element={<DoctorRoutes />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signUp" element={<SignUp />} />

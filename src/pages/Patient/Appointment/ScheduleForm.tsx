@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Calendar, User, Stethoscope, FileText, Building } from 'lucide-react';
+import axios from 'axios';
 
 const ScheduleForm = () => {
   const [appointment, setAppointment] = useState({
     appointmentDate: '',
     patientName: '',
-    doctor: '',
+    docName: '',
     reason: '',
     department: '',
     status: 'Pending',
@@ -28,26 +29,31 @@ const ScheduleForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    
     try {
-      const response = await fetch('http://localhost:8080/api/appointments/addAppointment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(appointment), // Send the appointment data as JSON
-      });
+      const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('authToken='))
+          ?.split('=')[1];
+
+        if (!token) {
+          console.error('No token found');
+          return;
+        }
   
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Appointment scheduled successfully:', result);
-      } else {
-        console.error('Failed to schedule appointment:', response.statusText);
-      }
+      const response = await axios.post(
+        '/api/appointments/addAppointment', appointment,{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
+      console.log('Form submitted successfully:', response.data);
+     
     } catch (error) {
-      console.error('Error while scheduling appointment:', error);
+      console.error('Error submitting form', error);
+      console.log(error);
     }
-    console.log(appointment);
   };
 
   return (
@@ -113,9 +119,9 @@ const ScheduleForm = () => {
                 Doctor
               </label>
               <select
-                id="doctor"
-                name="doctor"
-                value={appointment.doctor}
+                id="docName"
+                name="docName"
+                value={appointment.docName}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition duration-300"
                 required
