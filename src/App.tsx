@@ -4,21 +4,38 @@ import StaffRoutes from "./views/StaffRoutes"
 import DoctorRoutes from "./views/DoctorRoutes"
 import Login from './components/Login'
 import SignUp from './components/Signup'
+import Layout from "./components/Layout"
+import Home from "./pages/Patient/Appointment/AppointmentHome"
+import StaffHome from "./pages/Patient/StaffHome"
 
 function App() {
  
   return (
-    <BrowserRouter> 
+    <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Navigate to="/patient/home"/>}/>
-        <Route path='/patient/*' element={<PatientRoutes/>}/>
-        <Route path='/staff/*' element={<StaffRoutes/>}/>
-        <Route path='/doctor/*' element={<DoctorRoutes/>}/>
-        <Route path='/login' element={<Login />} />
-        <Route path='/signUp' element={<SignUp />} />
+        <Route
+          path="/"
+          element={
+            <Layout>
+              <StaffHome></StaffHome>
+            </Layout>
+          }
+        />
+        <Route
+          path="/patient/*"
+          element={
+            <Layout>
+              <PatientRoutes />
+            </Layout>
+          }
+        />
+        <Route path="/staff/*" element={<StaffRoutes />} />
+        <Route path="/doctor/*" element={<DoctorRoutes />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signUp" element={<SignUp />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
 export default App
