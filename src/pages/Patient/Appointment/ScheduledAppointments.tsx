@@ -29,6 +29,7 @@ const AppointmentMainContent = () => {
         open={appointmentDetailsModalOpen}
         setOpen={setAppointmentDetailsModalOpen}
         appointment={selectedAppointment}
+        onUpdate={() => {}}
       />
       <div className="bg-teal-800 flex flex-col lg:flex-row gap-6 p-6 h-full">
         {/* Left section with upcoming appointments and appointment history */}
