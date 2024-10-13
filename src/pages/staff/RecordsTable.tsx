@@ -39,6 +39,12 @@ const RecordsTable: React.FC = () => {
 
   const columns: TableColumnsType<DataType> = [
     {
+      title: 'Patient ID',
+      dataIndex: 'patientId',
+      sorter: (a, b) => a.patientId.localeCompare(b.patientId),
+      sortDirections: ['descend', 'ascend'],
+    },
+    {
       title: 'First Name',
       dataIndex: 'firstName',
       sorter: (a, b) => a.firstName.localeCompare(b.firstName),

@@ -1,16 +1,17 @@
 import { Route, Routes } from "react-router-dom";
 import MedicalRecordForm from "../pages/staff/AddMedicalRecord";
-import DashBoard from "../pages/staff/DashBoard";
+import RecordsTable from "../pages/staff/RecordsTable";
+
 
 const StaffRoutes = () => {
 
     return (
-       <>
-       <Routes>
-        <Route path="/" element={<DashBoard/>}/>
-        <Route path="/addRecord" element={<MedicalRecordForm/>}/>
-       </Routes>
-       </>
+        <>
+            <Routes>
+                <Route path="/addRecord" element={<MedicalRecordForm />} />
+                <Route path="/viewRecords" element={<RecordsTable />} />
+            </Routes>
+        </>
     );
 }
 

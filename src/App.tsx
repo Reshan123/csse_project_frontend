@@ -31,7 +31,10 @@ function App() {
             </Layout>
           }
         />
-        <Route path="/staff/*" element={<StaffRoutes />} />
+        <Route path="/staff/*" element={
+          <Layout>
+          <StaffRoutes />
+          </Layout>} />
         <Route path="/doctor/*" element={<DoctorRoutes />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signUp" element={<SignUp />} />
