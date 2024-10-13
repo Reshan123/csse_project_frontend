@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import NavBar from "../components/NavBar";
-import HomePage from "../pages/Patient/HomePage";
+import Home from "../pages/Patient/Home";
+import AppointmentRoutes from "../pages/Patient/Appointment/AppointmentRoutes";
 
 const PatientRoutes = () => {
 
@@ -8,7 +9,8 @@ const PatientRoutes = () => {
        <>
        <NavBar/>
        <Routes>
-            <Route path="/home" element={<HomePage/>}/>
+            <Route path="/home" element={<Home/>}/>
+            <Route path="/appointment/*" element={<AppointmentRoutes/>}/>
        </Routes>
        </>
     );
