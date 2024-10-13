@@ -1,13 +1,20 @@
-import { Route, Routes } from "react-router-dom"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
+import PatientRoutes from "./views/PatientRoutes"
+import StaffRoutes from "./views/StaffRoutes"
+import DoctorRoutes from "./views/DoctorRoutes"
 
-import HomePage from "./views/patient/HomePage"
 
 function App() {
  
   return (
-    <Routes>
-      <Route path="/" element={<HomePage/>}/>
-    </Routes>
+    <BrowserRouter> 
+      <Routes>
+        <Route path='/' element={<Navigate to="/patient/home"/>}/>
+        <Route path='/patient/*' element={<PatientRoutes/>}/>
+        <Route path='/staff/*' element={<StaffRoutes/>}/>
+        <Route path='/doctor/*' element={<DoctorRoutes/>}/>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
