@@ -7,6 +7,8 @@ import SignUp from './components/Signup'
 import Layout from "./components/Layout"
 import Home from "./pages/Patient/Appointment/AppointmentHome"
 import StaffHome from "./pages/Patient/StaffHome"
+import QrReader from "./components/QRreader"
+
 
 function App() {
  
@@ -33,6 +35,7 @@ function App() {
         <Route path="/doctor/*" element={<DoctorRoutes />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signUp" element={<SignUp />} />
+        <Route path="/qr" element={<QrReader/>} />
       </Routes>
     </BrowserRouter>
   );
