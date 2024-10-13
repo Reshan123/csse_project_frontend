@@ -1,4 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+} from "@headlessui/react";
 import {
   BuildingOfficeIcon,
   CheckCircleIcon,
@@ -7,18 +13,55 @@ import {
   PlusIcon,
   QrCodeIcon,
 } from "@heroicons/react/24/outline";
-import { BriefcaseMedical, ClipboardPlus, PersonStanding, ScaleIcon, SyringeIcon } from "lucide-react";
+import {
+  BriefcaseMedical,
+  ClipboardPlus,
+  PersonStanding,
+  ScaleIcon,
+  SyringeIcon,
+} from "lucide-react";
 import Table from "../../components/Table";
-import QrReader from "../../components/QRreader";
+import LoginDialogBox from "../../components/LoginDialogBox";
+import Signup from "../../components/Signup";
+import PatientRegister from "../../components/PatientRegister";
+import QrReader from "../../components/QrReader";
+import DoctorRegister from "../../components/DoctorRegister";
+import { getUsers } from "../../api/Register/FetchUsersApi";
+import { User } from "../../types/User";
 
 const StaffHome = () => {
-
   const [username, setUsername] = React.useState("John Doe");
   const [role, setRole] = React.useState("staff");
   const [hospital, setHospital] = React.useState("General Hospital");
   const [patientCount, setPatientCount] = React.useState(0);
   const [appointmentCount, setAppointmentCount] = React.useState(0);
   const [treatmentCount, setTreatmentCount] = React.useState(0);
+  const [patientAddOpen, setPatientAddOpen] = React.useState(false);
+  const [doctorAddOpen, setDoctorAddOpen] = React.useState(false);
+  const [users, setUsers] = React.useState<User[] | null>(null);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("authToken="))
+          ?.split("=")[1];
+
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+
+        const users = await getUsers(token);
+        setUsers(users);
+        return true;
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+    fetchUsers();
+  }, [username]);
   const cards = [
     {
       name: "Medical Records",
@@ -100,23 +143,62 @@ const StaffHome = () => {
                 </div>
               </div>
               <div className="mt-6 flex space-x-3 md:ml-4 md:mt-0">
+                <Dialog
+                  open={doctorAddOpen}
+                  onClose={setDoctorAddOpen}
+                  className="relative z-10"
+                >
+                  <DialogBackdrop
+                    transition
+                    className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+                  />
+
+                  <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                      <DialogPanel
+                        transition
+                        className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+                      >
+                        <DoctorRegister />
+                      </DialogPanel>
+                    </div>
+                  </div>
+                </Dialog>
                 <button
                   type="button"
-                  className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                  onClick={() => setDoctorAddOpen(true)}
+                  className="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
                 >
-                  Add Medical Record
+                  Add Doctor
                 </button>
-                <a
-                  href="/patient/home"
-                  className="flex items-center text-black hover:text-green-600"
+                <Dialog
+                  open={patientAddOpen}
+                  onClose={setPatientAddOpen}
+                  className="relative z-10"
                 >
-                  <button
-                    type="button"
-                    className="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
-                  >
-                    Scan ID
-                  </button>
-                </a>
+                  <DialogBackdrop
+                    transition
+                    className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in"
+                  />
+
+                  <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                    <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                      <DialogPanel
+                        transition
+                        className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all data-[closed]:translate-y-4 data-[closed]:opacity-0 data-[enter]:duration-300 data-[leave]:duration-200 data-[enter]:ease-out data-[leave]:ease-in sm:my-8 sm:w-full sm:max-w-lg sm:p-6 data-[closed]:sm:translate-y-0 data-[closed]:sm:scale-95"
+                      >
+                        <PatientRegister />
+                      </DialogPanel>
+                    </div>
+                  </div>
+                </Dialog>
+                <button
+                  type="button"
+                  onClick={() => setPatientAddOpen(true)}
+                  className="inline-flex items-center rounded-md bg-cyan-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-cyan-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600"
+                >
+                  Add Patient
+                </button>
               </div>
             </div>
           </div>
@@ -124,11 +206,10 @@ const StaffHome = () => {
 
         <div className="mt-8">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-
             <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {/* QR Scan */}
               <div className="overflow-hidden rounded-lg bg-white shadow p-2">
-<QrReader></QrReader>
+                <QrReader></QrReader>
               </div>
               {cards.map((card) => (
                 <div
@@ -223,7 +304,7 @@ const StaffHome = () => {
             <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
               <div className="mt-2 flex flex-col">
                 <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
-                  <Table></Table>
+                  
                 </div>
               </div>
             </div>

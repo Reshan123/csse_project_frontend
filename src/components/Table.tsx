@@ -1,3 +1,5 @@
+import { User } from "../types/User";
+
 const people = [
   {
     name: "Lindsay Walton",
@@ -7,7 +9,7 @@ const people = [
   },
 ];
 
-export default function Table() {
+export default function Table(users:User[]|null) {
   return (
     <div className="px-4 sm:px-6 lg:px-8">
       <div className="sm:flex sm:items-center items-end">

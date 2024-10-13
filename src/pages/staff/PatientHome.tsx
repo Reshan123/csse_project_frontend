@@ -41,7 +41,10 @@ import {
 import { useEffect, useState } from "react";
 import Table from "../../components/Table";
 import { removeUser } from "../../api/Register/RemoveUserApi";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { getPatientDetails } from "../../api/User/PatientDetails";
+import { UserResponse } from "../../types/User";
+import { calculateAge } from "../../util/AgeCalculator";
 
 const user = {
   name: "Whitney Francis",
@@ -109,10 +112,34 @@ export default function PatientHome() {
   const { id } = useParams();
   const [userId, setUserId] = useState(id);
   const [medicalRecordAvailable, setMedicalRecordAvailable] = useState(true);
-console.log(id);
-    
+  const [user, setUser] = useState<UserResponse>();
+  console.log(id);
+
+  const navigate = useNavigate();
   useEffect(() => {
     id == undefined && setUserId(id);
+    const fetchUser = async (userId: string) => {
+      try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("authToken="))
+          ?.split("=")[1];
+
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+
+        const user = await getPatientDetails(userId, token);
+        setUser(user);
+        return true;
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      }
+    };
+    if (id) {
+      fetchUser(id);
+    }
   }, [id]);
 
   const handleRemove = async (employeeId: string) => {
@@ -121,6 +148,7 @@ console.log(id);
       await removeUser(employeeId);
 
       alert("User removed successfully");
+       navigate(`/`)
     } catch (error) {
       console.error("Error removing user:", error);
       alert("Failed to remove user. Please try again.");
@@ -158,10 +186,10 @@ console.log(id);
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">
-                    Ricardo Cooper
+                    {user?.username}
                   </h1>
                   <p className="text-sm font-medium text-gray-500">
-                    {userId}
+                    {user?.email}
                   </p>
                 </div>
               </div>
@@ -182,7 +210,7 @@ console.log(id);
               </div>
             </div>
 
-            {medicalRecordAvailable ? (
+            {user?.medicalrecord ? (
               <div className="mx-auto mt-8 grid max-w-3xl grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
                 <div className="space-y-6 lg:col-span-2 lg:col-start-1">
                   {/* Description list*/}
@@ -193,36 +221,64 @@ console.log(id);
                           id="applicant-information-title"
                           className="text-lg font-medium leading-6 text-gray-900"
                         >
-                          Applicant Information
+                          Medical Record
                         </h2>
                         <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                          Personal details and application.
+                          Patient's medical details and information.
                         </p>
                       </div>
                       <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                        <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
+                        <dl className="grid grid-cols-3 gap-x-2 gap-y-8 sm:grid-cols-2 lg:sm:grid-cols-2">
                           <div className="sm:col-span-1">
                             <dt className="text-sm font-medium text-gray-500">
-                              Application for
+                              Patient ID
                             </dt>
                             <dd className="mt-1 text-sm text-gray-900">
-                              Backend Developer
+                              {user?.medicalrecord?.patientId}
                             </dd>
                           </div>
                           <div className="sm:col-span-1">
                             <dt className="text-sm font-medium text-gray-500">
-                              Email address
+                              Age
                             </dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              ricardocooper@example.com
+                            {user && (
+                              <dd className="mt-1 text-sm text-gray-900">
+                                {
+                                  calculateAge(user?.medicalrecord?.dateOfBirth)
+                                    .years
+                                }{" "}
+                                years ,{" "}
+                                {
+                                  calculateAge(user?.medicalrecord?.dateOfBirth)
+                                    .months
+                                }{" "}
+                                months.
+                              </dd>
+                            )}
+                          </div>
+
+                          <div className="sm:col-span-1">
+                            <dt className="text-sm font-medium text-red-500">
+                              Emergency Contact Name
+                            </dt>
+                            <dd className="mt-1 text-sm text-red-900 font-semibold">
+                              {user?.medicalrecord?.emergencyContactName}
+                            </dd>
+                          </div>
+                          <div className="sm:col-span-1">
+                            <dt className="text-sm font-medium text-red-500">
+                              Emergency Contact Number
+                            </dt>
+                            <dd className="mt-1 text-sm text-red-900 font-semibold">
+                              {user?.medicalrecord?.emergencyContactNumber}
                             </dd>
                           </div>
                           <div className="sm:col-span-1">
                             <dt className="text-sm font-medium text-gray-500">
-                              Salary expectation
+                              Address
                             </dt>
                             <dd className="mt-1 text-sm text-gray-900">
-                              $120,000
+                              {user?.medicalrecord?.address}
                             </dd>
                           </div>
                           <div className="sm:col-span-1">
@@ -230,20 +286,24 @@ console.log(id);
                               Phone
                             </dt>
                             <dd className="mt-1 text-sm text-gray-900">
-                              +1 555-555-5555
+                              {user?.medicalrecord?.contactNumber}
                             </dd>
                           </div>
                           <div className="sm:col-span-2">
                             <dt className="text-sm font-medium text-gray-500">
-                              About
+                              Allergies
                             </dt>
                             <dd className="mt-1 text-sm text-gray-900">
-                              Fugiat ipsum ipsum deserunt culpa aute sint do
-                              nostrud anim incididunt cillum culpa consequat.
-                              Excepteur qui ipsum aliquip consequat sint. Sit id
-                              mollit nulla mollit nostrud in ea officia
-                              proident. Irure nostrud pariatur mollit ad
-                              adipisicing reprehenderit deserunt qui eu.
+                              {user?.medicalrecord?.allergies.map(
+                                (allergy: string) => (
+                                  <span
+                                    key={allergy}
+                                    className="inline-block mr-2"
+                                  >
+                                    {allergy}
+                                  </span>
+                                )
+                              )}
                             </dd>
                           </div>
                           <div className="sm:col-span-2">
@@ -350,7 +410,7 @@ console.log(id);
                         ))}
                       </ul>
                     </div> */}
-                    <Table></Table>
+                  
                     <div className="mt-6 flex flex-col justify-stretch">
                       <button
                         type="button"
