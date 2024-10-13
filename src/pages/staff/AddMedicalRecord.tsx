@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-
-import { MedicalRecord } from '../../types/MedicalRecord';
+import axios from "axios";
+import { useContext, useState } from "react";
+import { MedicalRecord } from "../../types/MedicalRecord";
+import { MedicalRecordsContext } from "../../contexts/MedicalRecordsContext";
 
 const MedicalRecordForm: React.FC = () => {
+
+  const context = useContext(MedicalRecordsContext); // Use the context here
+  if (!context) {
+    return <div>Error: MedicalRecordsContext is not provided.</div>;
+  }
+  const { data } = context;
+
   const [formData, setFormData] = useState<MedicalRecord>({
+    userId: 'null',
     patientId: '',
     firstName: '',
     lastName: '',
@@ -18,9 +26,46 @@ const MedicalRecordForm: React.FC = () => {
     emergencyContactNumber: '',
   });
 
+  const generatePatientId = (dateOfBirth: string) => {
+    let newId: string;
+    let isDuplicate: boolean;
+
+    do {
+      const birthDatePart = dateOfBirth.replace(/-/g, ''); // Format: YYYYMMDD
+
+      // Extract last two digits of the year, month, and day
+      const yearPart = birthDatePart.slice(2, 4); // YY
+      const monthDayPart = birthDatePart.slice(4, 8); // MMDD
+
+      // Generate a random two-digit number
+      const randomPart = Math.floor(10 + Math.random() * 90).toString(); // Random number between 10 and 99
+
+      // Combine parts: P + YYMMDD + random
+      newId = `P${yearPart}${monthDayPart}${randomPart}`;
+
+      // Check if the generated ID already exists in the data
+      isDuplicate = data.some(record => record.patientId === newId);
+    } while (isDuplicate); // Continue looping until a unique ID is found
+
+    return newId; // Return the unique patient ID
+  };
+
+
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    // Automatically generate patientId when the dateOfBirth changes
+    if (name === 'dateOfBirth') {
+      const newPatientId = generatePatientId(value);
+
+      console.log(newPatientId)
+      setFormData((prevState: any) => ({
+        ...prevState,
+        patientId: newPatientId,
+      }));
+    }
   };
 
   const handleArrayInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>, field: 'allergies' | 'ongoingMedications') => {
@@ -30,33 +75,30 @@ const MedicalRecordForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('authToken='))
-          ?.split('=')[1];
+        .split('; ')
+        .find((row) => row.startsWith('authToken='))
+        ?.split('=')[1];
 
-        if (!token) {
-          console.error('No token found');
-          return;
-        }
-  
-      const response = await axios.post(
-        '/api/medicalRecords/addRecord', formData,{
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
+      if (!token) {
+        console.error('No token found');
+        return;
+      }
+
+      const response = await axios.post('/api/medicalRecords/addRecord', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
       console.log('Form submitted successfully:', response.data);
-     
     } catch (error) {
       console.error('Error submitting form', error);
       console.log(error);
     }
   };
-  
 
   return (
     <form onSubmit={handleSubmit} className="w-1/2 mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
@@ -70,7 +112,7 @@ const MedicalRecordForm: React.FC = () => {
             id="patientId"
             name="patientId"
             value={formData.patientId}
-            onChange={handleInputChange}
+            readOnly
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             required
           />
