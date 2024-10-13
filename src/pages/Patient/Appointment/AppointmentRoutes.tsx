@@ -11,8 +11,8 @@ const AppointmentRoutes = () => {
   return (
     <>
       <div className="flex">
-        <SideBar/>
-        <div className="w-3/4">
+        {/* <SideBar/> */}
+        <div>
           <Routes>
               <Route path="/" element={<AppointmentHome/>}/>
               <Route path="/scheduled" element={<ScheduledAppointments/>}/>
