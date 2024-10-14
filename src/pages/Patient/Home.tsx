@@ -1,8 +1,12 @@
+import Login from "../../components/Login"
+import Signup from "../../components/Signup"
 
 function Home() {
   return (
     <div>
-        <h1>Home</h1>
+      <Login />
+      <Signup />
+      
     </div>
   )
 }
