@@ -42,10 +42,12 @@ const AppointmentDetails: FC<Props> = ({
   onUpdate
 }) => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isRemoveConfirmationOpen, setIsRemoveConfirmationOpen] = useState(false);
   const [updatedAppointment, setUpdatedAppointment] = useState<Appointment | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [currentAppointment, setCurrentAppointment] = useState<Appointment | null>(appointment);
+
 
   useEffect(() => {
     setCurrentAppointment(appointment);
@@ -102,7 +104,11 @@ const AppointmentDetails: FC<Props> = ({
     }
   };
 
-  const handleRemove = async () => {
+  const handleRemoveClick = () => {
+    setIsRemoveConfirmationOpen(true);
+  };
+
+  const handleRemoveConfirm = async () => {
     try {
       const token = getAuthToken()
       if (!token) {
@@ -119,10 +125,35 @@ const AppointmentDetails: FC<Props> = ({
       );
       console.log(response.data);
       setOpen(false);
+      setIsRemoveConfirmationOpen(false);
+      // You might want to add a callback here to refresh the appointment list
     } catch (error) {
       console.error('Error deleting appointment:', error);
+      // Handle error (e.g., show an error message to the user)
     }
   };
+
+  // const handleRemove = async () => {
+  //   try {
+  //     const token = getAuthToken()
+  //     if (!token) {
+  //       throw new Error('No authentication token found');
+  //     }
+
+  //     const response = await axios.delete(
+  //       `/api/appointments/delete/${currentAppointment!.aptNo}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     );
+  //     console.log(response.data);
+  //     setOpen(false);
+  //   } catch (error) {
+  //     console.error('Error deleting appointment:', error);
+  //   }
+  // };
 
   const displayAppointment = currentAppointment || appointment;
 
@@ -159,7 +190,7 @@ const AppointmentDetails: FC<Props> = ({
                   </button>
                 )}
                 <button
-                  onClick={handleRemove}
+                  onClick={handleRemoveClick}
                   className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center justify-center transition duration-150 ease-in-out w-full sm:w-auto"
                 >
                   <TrashIcon className="w-4 h-4 mr-2" />
@@ -342,6 +373,37 @@ const AppointmentDetails: FC<Props> = ({
               disabled={isUpdating}
             >
               {isUpdating ? 'Updating...' : 'Update Appointment'}
+            </button>
+          </div>
+        </div>
+      </ModalWithBody>
+
+      {/* Removal Confirmation Modal */}
+      <ModalWithBody
+        open={isRemoveConfirmationOpen}
+        setOpen={setIsRemoveConfirmationOpen}
+        title=""
+        bigScreenWidth="md"
+      >
+        <div className="bg-white px-4 py-5 sm:p-4">
+          <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">
+            Are you sure you want to remove this appointment?
+          </h3>
+          <p className="text-sm text-gray-500 mb-6">
+            This action cannot be undone. The appointment will be permanently deleted from our records.
+          </p>
+          <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+            <button
+              onClick={handleRemoveConfirm}
+              className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              Remove
+            </button>
+            <button
+              onClick={() => setIsRemoveConfirmationOpen(false)}
+              className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+            >
+              Cancel
             </button>
           </div>
         </div>
