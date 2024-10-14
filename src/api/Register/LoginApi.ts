@@ -9,6 +9,7 @@ interface LoginResponse {
   success: boolean;
   message: string;
   accessToken?: string;
+  roles?: string[];
 }
 
 export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {

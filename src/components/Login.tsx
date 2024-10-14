@@ -28,6 +28,8 @@ export default function Login() {
       if (response.accessToken) {
         // Save the token in the cookie
         document.cookie = `authToken=${response.accessToken}; path=/; max-age=3600; SameSite=Lax`;
+        const firstRole = response.roles?.[0] || "user";
+        document.cookie = `userRole=${firstRole}; path=/; max-age=3600; SameSite=Lax`;
 
         // Handle other actions like redirect
         console.log("Login successful. Token saved in cookie.");

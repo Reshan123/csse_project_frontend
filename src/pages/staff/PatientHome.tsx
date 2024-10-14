@@ -15,6 +15,7 @@ import { Modal } from "antd";
 import { createUser } from "../../api/Register/SignupApi";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase.js";
+import { updateUser } from "../../api/Register/UpdateUserApi.js";
 // const user = {
 //   name: "Whitney Francis",
 //   email: "whitney@example.com",
@@ -145,7 +146,7 @@ export default function PatientHome() {
                   <div className="relative">
                     <img
                       alt=""
-                      src="https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80"
+                      src={user?.link}
                       className="h-16 w-16 rounded-full"
                     />
                     <span
@@ -460,41 +461,42 @@ export default function PatientHome() {
           </main>
         )}
       </div>
-      <UpdateProfileModal
-        open={updateModalOpen}
-        data={user}
-        onCancel={() => setUpdateModalOpen(false)}
-      />
+      {user && (
+        <UpdateProfileModal
+          open={updateModalOpen}
+          data={user}
+          onCancel={() => setUpdateModalOpen(false)}
+        />
+      )}
     </>
   );
 }
 
-const UpdateProfileModal = ({
-  open,
-  onCancel,
-  data,
-}: {
+const UpdateProfileModal: React.FC<{
   open: boolean;
   onCancel: () => void;
   data: UserResponse;
-}) => {
+}> = ({ open, onCancel, data }) => {
   const [formData, setFormData] = useState<User>({
     username: "",
     email: "",
     password: "",
     role: [],
+    link: "",
   });
   const [image, setImage] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [userId, setUserId] = useState(data.id);
 
   useEffect(() => {
     if (data) {
       setFormData({
         username: data.username,
         email: data.email,
-        password: "",
-        role: [],
+        password: "testpassoworderror",
+        role: ["user"],
+        link: data.link,
       });
     }
   }, [data]);
@@ -503,38 +505,42 @@ const UpdateProfileModal = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prevData: User) => ({
+    setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
 
-  const handleImageChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setImage(e.target.files[0]); // Set the selected file to state
+      setImage(e.target.files[0]);
     }
   };
 
   const handleSubmit = async () => {
     try {
+      let updatedFormData = { ...formData };
+
       if (image) {
-        const storageRef = ref(storage, `images/${image.name}`); // Reference to where the image will be stored
-
-        // Upload the file
+        const storageRef = ref(storage, `images/${image.name}`);
         const snapshot = await uploadBytes(storageRef, image);
-        console.log("Uploaded a file!", snapshot);
-
-        // Get download URL
         const downloadURL = await getDownloadURL(snapshot.ref);
-        console.log("File available at", downloadURL);
+
+        updatedFormData = {
+          ...updatedFormData,
+          link: downloadURL,
+        };
       }
-      await createUser(formData);
-      setSuccess(true);
-      setError(null);
+
+      if (userId) {
+        await updateUser(updatedFormData, userId);
+        setSuccess(true);
+        setError(null);
+      } else {
+        setError("User ID is missing.");
+      }
     } catch (err) {
-      setError("Failed to create user. Please try again.");
+      setError("Failed to update user. Please try again.");
       setSuccess(false);
     }
   };
@@ -603,7 +609,7 @@ const UpdateProfileModal = ({
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <label
                     htmlFor="password"
                     className="block text-sm font-medium leading-6 text-gray-900"
@@ -622,7 +628,7 @@ const UpdateProfileModal = ({
                       className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                     />
                   </div>
-                </div>
+                </div> */}
 
                 <div>
                   <label
