@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { DataType } from './RecordsTable';
-import { getAuthToken } from '../../api/Register/LoginApi';
 import axios from 'axios';
 
 interface TreatmentProps {

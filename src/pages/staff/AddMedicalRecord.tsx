@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-
 import { MedicalRecord } from '../../types/MedicalRecord';
+import { useMedicalRecords } from '../../hooks/useMedicalRecordsHook';
 
 const MedicalRecordForm: React.FC = () => {
+
+  const { addMedicalRecord, data } = useMedicalRecords();
+
   const [formData, setFormData] = useState<MedicalRecord>({
+    userId: 'null',
     patientId: '',
     firstName: '',
     lastName: '',
@@ -18,8 +21,34 @@ const MedicalRecordForm: React.FC = () => {
     emergencyContactNumber: '',
   });
 
+  const generatePatientId = (dateOfBirth: string) => {
+    const birthDatePart = dateOfBirth.replace(/-/g, '');
+
+
+    const yearPart = birthDatePart.slice(2, 4);
+    const monthDayPart = birthDatePart.slice(4, 8);
+
+
+    const randomPart = Math.floor(10 + Math.random() * 90).toString();
+
+
+    const patientID = `P${yearPart}${monthDayPart}${randomPart}`
+
+    const existingID = data.find(item => item.patientId === patientID);
+
+    if (existingID) {
+      return generatePatientId(dateOfBirth);
+    }
+    return patientID;
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    if (name === 'dateOfBirth') {
+      const patientId = generatePatientId(value);
+      setFormData({ ...formData, patientId, [name]: value });
+      return;
+    }
     setFormData({ ...formData, [name]: value });
   };
 
@@ -30,33 +59,11 @@ const MedicalRecordForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    try {
-      const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('authToken='))
-          ?.split('=')[1];
-
-        if (!token) {
-          console.error('No token found');
-          return;
-        }
-  
-      const response = await axios.post(
-        '/api/medicalRecords/addRecord', formData,{
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-      console.log('Form submitted successfully:', response.data);
-     
-    } catch (error) {
-      console.error('Error submitting form', error);
-      console.log(error);
+    if (addMedicalRecord) {
+      await addMedicalRecord(formData);
     }
   };
-  
+
 
   return (
     <form onSubmit={handleSubmit} className="w-1/2 mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
@@ -69,6 +76,7 @@ const MedicalRecordForm: React.FC = () => {
             type="text"
             id="patientId"
             name="patientId"
+            readOnly
             value={formData.patientId}
             onChange={handleInputChange}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"

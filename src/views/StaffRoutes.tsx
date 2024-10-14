@@ -3,8 +3,8 @@ import MedicalRecordForm from "../pages/staff/AddMedicalRecord";
 import RecordsTable from "../pages/staff/RecordsTable";
 
 
-const StaffRoutes = () => {
 
+const StaffRoutes = () => {
     return (
         <>
             <Routes>

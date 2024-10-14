@@ -22,14 +22,14 @@ export interface DataType {
 }
 
 const RecordsTable: React.FC = () => {
-  const { data, loading } = useMedicalRecords();
+  const { data, loading } = useMedicalRecords(); // Add refetch function
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
 
   const handleViewClick = (record: DataType) => {
     setSelectedRecord(record);
   };
 
-  const handleBack = () => {
+  const handleBack = async () => {
     setSelectedRecord(null);
   };
 
@@ -63,8 +63,8 @@ const RecordsTable: React.FC = () => {
       title: "Gender",
       dataIndex: "gender",
       filters: [
-        { text: "Male", value: "Male" },
-        { text: "Female", value: "Female" },
+        { text: "Male", value: "male" },
+        { text: "Female", value: "female" },
       ],
       onFilter: (value, record) => record.gender === value,
     },
