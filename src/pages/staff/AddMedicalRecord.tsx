@@ -32,17 +32,22 @@ const MedicalRecordForm: React.FC = () => {
     e.preventDefault();
   
     try {
-      const token = localStorage.getItem('token'); 
+      const token = document.cookie
+          .split('; ')
+          .find((row) => row.startsWith('authToken='))
+          ?.split('=')[1];
+
+        if (!token) {
+          console.error('No token found');
+          return;
+        }
   
       const response = await axios.post(
-        '/api/medicalRecords/addRecord',
-        formData,
-        {
+        '/api/medicalRecords/addRecord', formData,{
           headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`,
           },
-        }
-      );
+        });
   
       console.log('Form submitted successfully:', response.data);
      

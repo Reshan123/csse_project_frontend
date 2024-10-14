@@ -1,153 +1,107 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { createTheme } from '@mui/material/styles';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import Article from '@mui/icons-material/Article'
-import Description from '@mui/icons-material/Description'
-import { AppProvider } from '@toolpad/core/AppProvider';
-import AddIcon from '@mui/icons-material/Add'
-import AppoinmentsIcon from '@mui/icons-material/Event'
-import { DashboardLayout } from '@toolpad/core/DashboardLayout';
-import type { Router, Navigation } from '@toolpad/core';
-import MedicalRecordForm from './AddMedicalRecord';
-import logo from "../../assets/react.svg"
-import SearchRecord from './SearchRecord';
+import React, { useState } from 'react';
+import {
+  DesktopOutlined,
+  FileOutlined,
+  PieChartOutlined,
+} from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import ViewRecords from './ViewRecord';
+import AddMedicalRecord from './AddMedicalRecord'
 
+const { Content, Footer, Sider } = Layout;
 
-const NAVIGATION: Navigation = [
-  {
-    kind: 'header',
-    title: 'Main items',
-  },
-  {
-    segment: 'dashboard',
-    title: 'Dashboard',
-    icon: <DashboardIcon />,
-  },
-  {
-    kind: 'divider',
-  },
-  {
-    kind: 'header',
-    title: 'Patient Details',
-  },
-  {
-    segment: 'records',
-    title: 'Records',
-    icon: <Article />,
-    children: [
-        {
-            segment: 'addRecord',
-            title: 'Add Record',
-            icon: <AddIcon />,  
-          },
-      {
-        segment: 'search',
-        title: 'View Record',
-        icon: <Description/>,
-      },
-    ],
-  },
-  {
-    segment: 'appoinments',
-    title: 'Appoinments',
-    icon: <AppoinmentsIcon />,
-  },
+type MenuItem = Required<MenuProps>['items'][number];
+
+function getItem(
+  label: React.ReactNode,
+  key: React.Key,
+  icon?: React.ReactNode,
+  children?: MenuItem[],
+): MenuItem {
+  return {
+    key,
+    icon,
+    children,
+    label,
+  } as MenuItem;
+}
+
+const items: MenuItem[] = [
+  getItem('Dashboard', '1', <PieChartOutlined />),
+  getItem('Records', 'sub1', <FileOutlined />, [
+    getItem('View Records', '2'),
+    getItem('Add Record', '3'),
+  ]),
+  getItem('Appointments', '4', <DesktopOutlined />),
 ];
 
-const demoTheme = createTheme({
-  palette: {
-    mode: 'light', 
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#f50057', 
-    },
-    background: {
-      default: '#f0f2f5', 
-      paper: '#ffffff', 
-    },
-    text: {
-      primary: '#000000', 
-      secondary: '#555555', 
-    },
-  },
-  cssVariables: {
-    colorSchemeSelector: 'data-toolpad-color-scheme',
-  },
-  colorSchemes: { light: true, dark: true },
-  breakpoints: {
-    values: {
-      xs: 0,
-      sm: 600,
-      md: 600,
-      lg: 1200,
-      xl: 1536,
-    },
-  },
-});
+const Dashboard: React.FC = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const [selectedKey, setSelectedKey] = useState('1'); // Track selected menu item
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
 
-
-function DemoPageContent({ pathname }: { pathname: string }) {
-  return (
-    <Box
-      sx={{
-        py: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center', // Center vertically
-        height: '100vh', // Full height of the viewport
-        textAlign: 'center',
-      }}
-    >
-      {pathname === '/records/addRecord' ? (
-        <MedicalRecordForm /> 
-      ) : pathname === '/records/search' ? 
-        <SearchRecord /> : (
-        <Typography>Dashboard content for {pathname}</Typography>
-      )}
-    </Box>
-  );
-}
-
-  
-
-
-
-export default function Dashboard() {
- 
-
-  const [pathname, setPathname] = React.useState('/dashboard');
-
-  const router = React.useMemo<Router>(() => {
-    return {
-      pathname,
-      searchParams: new URLSearchParams(),
-      navigate: (path) => {
-        setPathname(String(path)); 
-      },
-    };
-  }, [pathname]);
-
-  
+  // Function to render content based on the selected key
+  const renderContent = () => {
+    switch (selectedKey) {
+      case '1':
+        return <div></div>;
+      case '2':
+        return <div><ViewRecords/></div>;
+      case '3':
+        return <div><AddMedicalRecord/></div>;
+      case '4':
+        return <div>Manage your appointments here.</div>;
+      default:
+        return <div>Welcome to the Dashboard!</div>;
+    }
+  };
 
   return (
-    // preview-start
-    <AppProvider
-      navigation={NAVIGATION}
-      router={router}
-      theme={demoTheme}
-      branding={{
-        logo: <img src={logo} alt="MUI logo" />,
-        title: 'Med-Care',
-      }}
-    >
-      <DashboardLayout>
-        <DemoPageContent pathname={pathname} />
-      </DashboardLayout>
-    </AppProvider>
+    <Layout style={{ minHeight: '100vh' }}>
+      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+        <div className="demo-logo-vertical" />
+        <Menu
+          theme="dark"
+          defaultSelectedKeys={['1']}
+          mode="inline"
+          items={items}
+          onClick={(e) => setSelectedKey(e.key)} // Update selected key on menu item click
+        />
+      </Sider>
+      <Layout>
+        
+        <Content style={{ margin: '0 16px' }}>
+          <Breadcrumb style={{ margin: '16px 0' }}>
+            <Breadcrumb.Item>
+              {selectedKey === '1'
+                ? 'Dashboard'
+                : selectedKey === '2'
+                ? 'View Records'
+                : selectedKey === '3'
+                ? 'Add Record'
+                : 'Appointments'}
+            </Breadcrumb.Item>
+          </Breadcrumb>
+          <div
+            style={{
+              padding: 24,
+              minHeight: 360,
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+          >
+            {renderContent()}
+          </div>
+        </Content>
+        <Footer style={{ textAlign: 'center' }}>
+          Ant Design ©{new Date().getFullYear()} Created by Ant UED
+        </Footer>
+      </Layout>
+    </Layout>
   );
-}
+};
+
+export default Dashboard;
