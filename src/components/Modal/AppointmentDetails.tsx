@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { PencilIcon } from 'lucide-react';
+import { PencilIcon, TrashIcon } from 'lucide-react';
 import ModalWithBody from './ModalWithBody';
 import axios from 'axios';
 import { getAuthToken } from '../../api/Register/LoginApi';
@@ -102,6 +102,28 @@ const AppointmentDetails: FC<Props> = ({
     }
   };
 
+  const handleRemove = async () => {
+    try {
+      const token = getAuthToken()
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
+
+      const response = await axios.delete(
+        `/api/appointments/delete/${currentAppointment!.aptNo}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log(response.data);
+      setOpen(false);
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+    }
+  };
+
   const displayAppointment = currentAppointment || appointment;
 
   const isPending = displayAppointment?.status.toLowerCase() === 'pending';
@@ -126,15 +148,24 @@ const AppointmentDetails: FC<Props> = ({
                   Detailed information for the selected appointment
                 </p>
               </div>
-              {isPending && (
+              <div className="flex flex-col sm:flex-row w-full sm:w-auto space-y-2 sm:space-y-0 sm:space-x-2 md:ml-10">
+                {isPending && (
+                  <button
+                    onClick={handleUpdateClick}
+                    className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-md flex items-center justify-center transition duration-150 ease-in-out w-full sm:w-auto"
+                  >
+                    <PencilIcon className="w-4 h-4 mr-2" />
+                    Update
+                  </button>
+                )}
                 <button
-                  onClick={handleUpdateClick}
-                  className="bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 md:ml-5 rounded-md flex items-center transition duration-150 ease-in-out"
+                  onClick={handleRemove}
+                  className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center justify-center transition duration-150 ease-in-out w-full sm:w-auto"
                 >
-                  <PencilIcon className="w-4 h-4 mr-2" />
-                  Update
+                  <TrashIcon className="w-4 h-4 mr-2" />
+                  Remove
                 </button>
-              )}
+              </div>
             </div>
           </div>
 

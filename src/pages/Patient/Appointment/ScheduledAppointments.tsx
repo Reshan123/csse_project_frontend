@@ -31,7 +31,7 @@ const AppointmentMainContent = () => {
         appointment={selectedAppointment}
         onUpdate={() => {}}
       />
-      <div className="bg-teal-800 flex flex-col lg:flex-row gap-6 p-6 h-full">
+      <div className="bg-teal-800 flex flex-col lg:flex-row gap-6 p-6 h-full min-h-screen">
         {/* Left section with upcoming appointments and appointment history */}
         <div className="lg:w-2/3 space-y-6">
           {/* Upcoming Appointments Card */}
