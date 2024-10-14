@@ -28,6 +28,9 @@ import QrReader from "../../components/QrReader";
 import DoctorRegister from "../../components/DoctorRegister";
 import { getUsers } from "../../api/Register/FetchUsersApi";
 import { User } from "../../types/User";
+import UsersTable, { DataType } from "./UsersTable";
+
+
 
 const StaffHome = () => {
   const [username, setUsername] = React.useState("John Doe");
@@ -39,9 +42,11 @@ const StaffHome = () => {
   const [patientAddOpen, setPatientAddOpen] = React.useState(false);
   const [doctorAddOpen, setDoctorAddOpen] = React.useState(false);
   const [users, setUsers] = React.useState<User[] | null>(null);
+  const [loading, setLoading] = React.useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoading(true);
       try {
         const token = document.cookie
           .split("; ")
@@ -55,13 +60,24 @@ const StaffHome = () => {
 
         const users = await getUsers(token);
         setUsers(users);
+        setLoading(false);
         return true;
       } catch (error) {
+        setLoading(false);
         console.error("Error fetching user:", error);
       }
     };
     fetchUsers();
   }, [username]);
+
+  const mapUserToDataType = (user: User): DataType => {
+    return {
+      id: user.id ?? "", 
+      username: user.username,
+      email: user.email,
+      link: user.link ?? "", 
+    };
+  };
   const cards = [
     {
       name: "Medical Records",
@@ -304,7 +320,10 @@ const StaffHome = () => {
             <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
               <div className="mt-2 flex flex-col">
                 <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
-                  
+                  <UsersTable
+                    data={(users ?? []).map(mapUserToDataType)}
+                    loading={loading}
+                  ></UsersTable>
                 </div>
               </div>
             </div>
