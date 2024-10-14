@@ -32,14 +32,26 @@ const MedicalRecordForm: React.FC = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post('/api/medicalRecords/addRecord', formData);
+      const token = localStorage.getItem('token'); 
+  
+      const response = await axios.post(
+        '/api/medicalRecords/addRecord',
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, 
+          },
+        }
+      );
+  
       console.log('Form submitted successfully:', response.data);
-      // You can also handle further actions like resetting the form or displaying a success message
+     
     } catch (error) {
-      console.error('Error submitting form:', error);
-     console.log(error)
+      console.error('Error submitting form', error);
+      console.log(error);
     }
   };
+  
 
   return (
     <form onSubmit={handleSubmit} className="w-1/2 mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
