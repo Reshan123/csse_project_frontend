@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import type { DataType } from './RecordsTable'; // Update the import path as needed
-import TreatmentsForm from './AddTreatment';
-import UpdateRecord from './UpdateMedicalRecord';
+import type { DataType } from '../../components/Staff/RecordsTable'; // Update the import path as needed
+import TreatmentsForm from '../../components/Staff/AddTreatment';
+import UpdateRecord from '../../components/Staff/UpdateMedicalRecord';
 import { getAuthToken } from '../../api/Register/LoginApi';
 import axios from 'axios';
+import TreatmentsList from './TreatmentsList';
 
 interface ViewRecordProps {
     record: DataType;
@@ -13,6 +14,8 @@ interface ViewRecordProps {
 const ViewRecord: React.FC<ViewRecordProps> = ({ record, onBack }) => {
     const [isAddingTreatment, setIsAddingTreatment] = useState(false);
     const [isUpdatingRecord, setIsUpdatingRecord] = useState(false);
+    const [isViewingTreatments, setIsViewingTreatments] = useState(false);
+
     const [refreshKey, setRefreshKey] = useState(0);
     const [data, setRecord] = useState<DataType | null>(null);
 
@@ -21,6 +24,7 @@ const ViewRecord: React.FC<ViewRecordProps> = ({ record, onBack }) => {
         console.error('No token found');
         return;
     }
+
     const fetchData = async () => {
         try {
             const response = await axios.get(`/api/medicalRecords/getById/${record.id}`, {
@@ -57,9 +61,12 @@ const ViewRecord: React.FC<ViewRecordProps> = ({ record, onBack }) => {
     const handleBackToView = () => {
         setIsAddingTreatment(false);
         setIsUpdatingRecord(false);
-        // Force a refresh when returning to the view
+        setIsViewingTreatments(false);
         setRefreshKey(prevKey => prevKey + 1);
     };
+
+
+    const formattedDateOfBirth = data?.dateOfBirth ? data.dateOfBirth.split('T')[0] : 'N/A';
 
     if (isAddingTreatment) {
         return <TreatmentsForm record={record} onBack={handleBackToView} />;
@@ -69,6 +76,14 @@ const ViewRecord: React.FC<ViewRecordProps> = ({ record, onBack }) => {
         return <UpdateRecord record={record} onBack={handleBackToView} />;
     }
 
+    const handleViewTreatments = () => {
+        setIsViewingTreatments(true);
+    };
+
+    if (isViewingTreatments) {
+        return <TreatmentsList treatments={data?.treatments || []} onBack={handleBackToView} />;
+    }
+
     return (
         <div key={refreshKey} className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg">
             <h2 className="text-3xl font-bold mb-6 text-gray-800">View Record</h2>
@@ -76,7 +91,7 @@ const ViewRecord: React.FC<ViewRecordProps> = ({ record, onBack }) => {
                 <InfoItem label="Patient ID" value={data?.patientId || 'NA'} />
                 <InfoItem label="First Name" value={data?.firstName || 'NA'} />
                 <InfoItem label="Last Name" value={data?.lastName || 'NA'} />
-                <InfoItem label="Date of Birth" value={data?.dateOfBirth || 'NA'} />
+                <InfoItem label="Date of Birth" value={formattedDateOfBirth} />
                 <InfoItem label="Gender" value={data?.gender || 'NA'} />
                 <InfoItem label="Contact Number" value={data?.contactNumber || 'NA'} />
                 <InfoItem label="Address" value={data?.address || 'N/A'} />
@@ -104,10 +119,17 @@ const ViewRecord: React.FC<ViewRecordProps> = ({ record, onBack }) => {
                 >
                     Update Record
                 </button>
+                <button
+                    onClick={handleViewTreatments}
+                    className="px-4 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-75 transition-colors duration-200"
+                >
+                    View Treatments
+                </button>
             </div>
         </div>
     );
-};
+}
+
 
 const InfoItem: React.FC<{ label: string; value: string }> = ({ label, value }) => (
     <div className="flex flex-col sm:flex-row sm:justify-between border-b border-gray-200 pb-2">

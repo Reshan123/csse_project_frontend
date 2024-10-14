@@ -3,7 +3,7 @@ import MockAdapter from "axios-mock-adapter";
 import { loginUser } from "../api/Register/LoginApi";
 import MedicalRecordForm from "../pages/staff/AddMedicalRecord";
 
-// Create a new instance of MockAdapter for mocking Axios requests
+=
 const mock = new MockAdapter(axios);
 
 describe("User Authentication and Medical Record Submission", () => {

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Table, Button } from "antd";
 import type { TableColumnsType } from "antd";
-import ViewRecord from "./ViewRecord"; // Import the ViewRecord component
+import ViewRecord from "../../pages/staff/ViewRecord"; // Import the ViewRecord component
 import { useMedicalRecords } from "../../hooks/useMedicalRecordsHook";
 
 export interface DataType {
@@ -16,6 +16,7 @@ export interface DataType {
   contactNumber: string;
   address?: string;
   allergies?: string[];
+  treatments?:string[]
   ongoingMedications?: string[];
   emergencyContactName?: string;
   emergencyContactNumber?: string;
@@ -32,6 +33,11 @@ const RecordsTable: React.FC = () => {
   const handleBack = async () => {
     setSelectedRecord(null);
   };
+
+  const formattedData = data?.map(record => ({
+    ...record,
+    dateOfBirth: record.dateOfBirth.split('T')[0]
+  })) || [];
 
   const columns: TableColumnsType<DataType> = [
     {
@@ -90,7 +96,7 @@ const RecordsTable: React.FC = () => {
   ) : (
     <Table<DataType>
       columns={columns}
-      dataSource={data}
+      dataSource={formattedData}
       loading={loading}
       pagination={{ pageSize: 5 }}
       rowKey="key"

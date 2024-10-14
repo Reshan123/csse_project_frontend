@@ -18,12 +18,12 @@ interface UsersTableProps {
   loading: boolean;
 }
 
-const UsersTable: React.FC<UsersTableProps> = ({ data,loading }) => {
- 
+const UsersTable: React.FC<UsersTableProps> = ({ data, loading }) => {
+
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
- const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const handleViewClick = (record: DataType) => {
-     navigate(`staff/home/${record.id}`); 
+    navigate(`staff/home/${record.id}`);
   };
 
   const handleBack = () => {
@@ -53,15 +53,15 @@ const UsersTable: React.FC<UsersTableProps> = ({ data,loading }) => {
       ),
     },
   ];
-    return (
-      <Table<DataType>
-        columns={columns}
-        dataSource={data}
-        loading={loading}
-        pagination={{ pageSize: 5 }}
-        rowKey="key"
-      />
-    );
+  return (
+    <Table<DataType>
+      columns={columns}
+      dataSource={data}
+      loading={loading}
+      pagination={{ pageSize: 5 }}
+      rowKey="key"
+    />
+  );
 };
 
 export default UsersTable;

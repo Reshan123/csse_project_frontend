@@ -3,28 +3,22 @@ import type { DataType } from './RecordsTable'; // Update the path as needed
 import axios from 'axios';
 import { getAuthToken } from '../../api/Register/LoginApi';
 
-
 interface UpdateRecordProps {
     record: DataType;
     onBack: () => void;
 }
 
-
-
 const UpdateRecord: React.FC<UpdateRecordProps> = ({ record, onBack }) => {
-
     const [formData, setFormData] = React.useState({
         ...record,
-        allergies: record.allergies || [], 
-        ongoingMedications: record.ongoingMedications || [] 
+        allergies: record.allergies || [],
+        ongoingMedications: record.ongoingMedications || []
     });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-        
         if (name === 'allergies' || name === 'ongoingMedications') {
-           
             const values = value.split(',').map(item => item.trim());
             setFormData(prev => ({ ...prev, [name]: values }));
         } else {
@@ -37,6 +31,12 @@ const UpdateRecord: React.FC<UpdateRecordProps> = ({ record, onBack }) => {
         console.log('Updated Record:', formData);
 
         try {
+            const formattedDateOfBirth = formData.dateOfBirth.split('T')[0];
+
+            const dataToSubmit = {
+                ...formData,
+                dateOfBirth: formattedDateOfBirth,
+            };
 
             const token = getAuthToken();
             const config = {
@@ -44,11 +44,11 @@ const UpdateRecord: React.FC<UpdateRecordProps> = ({ record, onBack }) => {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 }
-            }
+            };
 
-            const response = await axios.put(`/api/medicalRecords/updateRecord/${record.id}`, formData, config); 
+            const response = await axios.put(`/api/medicalRecords/updateRecord/${record.id}`, dataToSubmit, config);
             console.log(response);
-            onBack(); 
+            onBack();
         } catch (error) {
             console.error('Error updating record:', error);
         }
@@ -102,7 +102,7 @@ const UpdateRecord: React.FC<UpdateRecordProps> = ({ record, onBack }) => {
                             type="date"
                             id="dateOfBirth"
                             name="dateOfBirth"
-                            value={formData.dateOfBirth}
+                            value={formData.dateOfBirth?.split('T')[0] || ''} // Set existing value
                             onChange={handleInputChange}
                             required
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
@@ -110,15 +110,18 @@ const UpdateRecord: React.FC<UpdateRecordProps> = ({ record, onBack }) => {
                     </div>
                     <div>
                         <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
-                        <input
-                            type="text"
+                        <select
                             id="gender"
                             name="gender"
                             value={formData.gender}
                             onChange={handleInputChange}
                             required
                             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
+                        >
+                            <option value="" disabled>Select gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
                     </div>
                 </div>
                 <div>
@@ -198,6 +201,15 @@ const UpdateRecord: React.FC<UpdateRecordProps> = ({ record, onBack }) => {
                         className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     >
                         Update Record
+                    </button>
+                </div>
+                <div>
+                    <button
+                        type="button"
+                        onClick={onBack}
+                        className="w-full flex justify-center py-2 px-4 mt-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    >
+                        Cancel
                     </button>
                 </div>
             </form>

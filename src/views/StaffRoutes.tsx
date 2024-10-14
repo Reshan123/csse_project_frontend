@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import MedicalRecordForm from "../pages/staff/AddMedicalRecord";
-import RecordsTable from "../pages/staff/RecordsTable";
+import MedicalRecordForm from "../components/Staff/AddMedicalRecord";
+import RecordsTable from "../components/Staff/RecordsTable";
 import PatientHome from "../pages/staff/PatientHome";
 import ReportScreen from "../pages/Report/ReportScreen";
 
