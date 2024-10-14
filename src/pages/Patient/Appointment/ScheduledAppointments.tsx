@@ -21,7 +21,7 @@ const AppointmentMainContent = () => {
       </div>
 
       <button className="w-full py-2 bg-green-300 rounded-lg mb-4 hover:bg-green-400 transition-colors"
-        onClick={() => window.location.href = '/patient/schedule/form'}
+        onClick={() => window.location.href = '/patient/appointment/schedule/form'}
       >
         Schedule new Appointment
       </button>
