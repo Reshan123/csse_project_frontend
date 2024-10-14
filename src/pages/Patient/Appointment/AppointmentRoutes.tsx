@@ -2,6 +2,7 @@ import { Route, Routes } from "react-router-dom";
 import SideBar from "./SideBar";
 import ScheduledAppointments from "./ScheduledAppointments";
 import AppointmentHome from "./AppointmentHome";
+import CompletedAppointments from "./CompletedAppointments";
 
 const AppointmentRoutes = () => {
 
@@ -14,6 +15,7 @@ const AppointmentRoutes = () => {
           <Routes>
               <Route path="/" element={<AppointmentHome/>}/>
               <Route path="/scheduled" element={<ScheduledAppointments/>}/>
+              <Route path="/completed" element={<CompletedAppointments/>}/>
           </Routes>
         </div>
       </div>
