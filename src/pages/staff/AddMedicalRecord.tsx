@@ -32,7 +32,7 @@ const MedicalRecordForm: React.FC = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post('http://localhost:8000/api/medicalRecords/addRecord', formData);
+      const response = await axios.post('/api/medicalRecords/addRecord', formData);
       console.log('Form submitted successfully:', response.data);
       // You can also handle further actions like resetting the form or displaying a success message
     } catch (error) {
