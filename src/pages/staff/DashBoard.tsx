@@ -6,7 +6,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import ViewRecords from './ViewRecord';
+import RecordsTable from './RecordsTable';
 import AddMedicalRecord from './AddMedicalRecord'
 
 const { Content, Footer, Sider } = Layout;
@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
       case '1':
         return <div></div>;
       case '2':
-        return <div><ViewRecords/></div>;
+        return <div><RecordsTable/></div>;
       case '3':
         return <div><AddMedicalRecord/></div>;
       case '4':

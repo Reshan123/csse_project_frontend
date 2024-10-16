@@ -1,116 +1,64 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Button } from 'antd';
-import type { TableColumnsType, TableProps } from 'antd';
-import axios from 'axios';
+// ViewRecord.tsx
+import React, { useState } from 'react';
+import type { DataType } from './RecordsTable'; // Update the import path as needed
+import TreatmentsForm from './AddTreatment';
 
-interface DataType {
-  key: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  gender: string;
-  contactNumber: string;
+
+interface ViewRecordProps {
+    record: DataType;
+    onBack: () => void;
 }
 
-const columns: TableColumnsType<DataType> = [
-  {
-    title: 'First Name',
-    dataIndex: 'firstName',
-    sorter: (a, b) => a.firstName.localeCompare(b.firstName),
-    sortDirections: ['descend', 'ascend'],
-  },
-  {
-    title: 'Last Name',
-    dataIndex: 'lastName',
-    sorter: (a, b) => a.lastName.localeCompare(b.lastName),
-    sortDirections: ['descend', 'ascend'],
-  },
-  {
-    title: 'Date of Birth',
-    dataIndex: 'dateOfBirth',
-    sorter: (a, b) => new Date(a.dateOfBirth).getTime() - new Date(b.dateOfBirth).getTime(),
-    sortDirections: ['descend', 'ascend'],
-  },
-  {
-    title: 'Gender',
-    dataIndex: 'gender',
-    filters: [
-      { text: 'Male', value: 'Male' },
-      { text: 'Female', value: 'Female' },
-    ],
-    onFilter: (value, record) => record.gender === value,
-  },
-  {
-    title: 'Contact Number',
-    dataIndex: 'contactNumber',
-    sorter: (a, b) => a.contactNumber.localeCompare(b.contactNumber),
-    sortDirections: ['descend', 'ascend'],
-  },
-  {
-    title: 'Action',
-    dataIndex: 'action',
-    render: (_, record) => <Button type="link">View</Button>,
-  },
-];
+const ViewRecord: React.FC<ViewRecordProps> = ({ record, onBack }) => {
+    const [isAddingTreatment, setIsAddingTreatment] = useState(false);
 
-const ViewRecords: React.FC = () => {
-  const [data, setData] = useState<DataType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const token = document.cookie
-          .split('; ')
-          .find((row) => row.startsWith('authToken='))
-          ?.split('=')[1];
-
-        if (!token) {
-          console.error('No token found');
-          return;
-        }
-
-        const response = await axios.get('/api/medicalRecords/getAll', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const fetchedData = response.data.map((record: any) => ({
-          key: record.patientId,
-          firstName: record.firstName,
-          lastName: record.lastName,
-          dateOfBirth: record.dateOfBirth,
-          gender: record.gender,
-          contactNumber: record.contactNumber,
-        }));
-
-        setData(fetchedData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
+    const handleAddTreatment = () => {
+        setIsAddingTreatment(true);
     };
 
-    fetchData();
-  }, []);
+    const handleBackToView = () => {
+        setIsAddingTreatment(false);
+    };
 
-  const onChange: TableProps<DataType>['onChange'] = (pagination, filters, sorter, extra) => {
-    console.log('params', pagination, filters, sorter, extra);
-  };
-
-  return (
-    <Table<DataType>
-      columns={columns}
-      dataSource={data}
-      loading={loading}
-      onChange={onChange}
-      pagination={{ pageSize: 5 }}
-      rowKey="key"
-    />
-  );
+    return isAddingTreatment ? (
+        <TreatmentsForm record={record} onBack={handleBackToView} />
+    ) : (
+        <div className="max-w-2xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+            <h2 className="text-3xl font-bold mb-6 text-gray-800">View Record</h2>
+            <div className="space-y-4">
+                <InfoItem label="Patient ID" value={record.patientId} />
+                <InfoItem label="First Name" value={record.firstName} />
+                <InfoItem label="Last Name" value={record.lastName} />
+                <InfoItem label="Date of Birth" value={record.dateOfBirth} />
+                <InfoItem label="Gender" value={record.gender} />
+                <InfoItem label="Contact Number" value={record.contactNumber} />
+                <InfoItem label="Address" value={record.address || 'N/A'} />
+                <InfoItem label="Allergies" value={record.allergies ? record.allergies.join(', ') : 'N/A'} />
+                <InfoItem label="Ongoing Medications" value={record.ongoingMedications ? record.ongoingMedications.join(', ') : 'N/A'} />
+                <InfoItem label="Emergency Contact Name" value={record.emergencyContactName || 'N/A'} />
+                <InfoItem label="Emergency Contact Number" value={record.emergencyContactNumber || 'N/A'} />
+            </div>
+            <button
+                onClick={onBack}
+                className="mt-6 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-colors duration-200"
+            >
+                Back
+            </button>
+            <button
+                onClick={handleAddTreatment}
+                className="mt-6 px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 transition-colors duration-200"
+            >
+                Add Treatment
+            </button>
+        </div>
+    );
 };
 
-export default ViewRecords;
+const InfoItem: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+    <div className="flex flex-col sm:flex-row sm:justify-between border-b border-gray-200 pb-2">
+        <span className="font-semibold text-gray-700">{label}:</span>
+        <span className="text-gray-600">{value}</span>
+    </div>
+);
+
+export default ViewRecord;

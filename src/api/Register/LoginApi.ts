@@ -25,3 +25,19 @@ export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
     throw new Error("Network error");
   }
 };
+
+// config.ts
+export const getAuthToken = (): string | null => {
+  const token = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('authToken='))
+    ?.split('=')[1];
+
+  if (!token) {
+    console.error('No token found');
+    return null;
+  }
+  
+  return token;
+};
+
