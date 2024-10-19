@@ -29,6 +29,7 @@ import DoctorRegister from "../../components/DoctorRegister";
 import { getUsers } from "../../api/Register/FetchUsersApi";
 import { User } from "../../types/User";
 import UsersTable, { DataType } from "./UsersTable";
+import { getUserIdFromJwtCookie } from "../../util/jwtDecode";
 
 const StaffHome = () => {
   const [username, setUsername] = React.useState("John Doe");
@@ -41,6 +42,8 @@ const StaffHome = () => {
   const [doctorAddOpen, setDoctorAddOpen] = React.useState(false);
   const [users, setUsers] = React.useState<User[] | null>(null);
   const [loading, setLoading] = React.useState(false);
+
+  console.log("Token", getUserIdFromJwtCookie());
 
   useEffect(() => {
     const fetchUsers = async () => {
