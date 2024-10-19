@@ -4,12 +4,11 @@ import StaffRoutes from "./views/StaffRoutes"
 import DoctorRoutes from "./views/DoctorRoutes"
 import Login from './components/Login'
 import SignUp from './components/Signup'
-import Layout from "./components/Layout"
 import Home from "./pages/Patient/Appointment/AppointmentHome"
-import StaffHome from "./pages/Patient/StaffHome"
-import QrReader from "./components/QRreader"
 import { getAuthToken } from "./api/Register/LoginApi"
 import { useEffect } from "react"
+import StaffSideBar from "./components/StaffSideBar"
+import StaffHome from "./pages/staff/StaffHome"
 
 
 function App() {
@@ -53,7 +52,6 @@ function App() {
       <Route path="/doctor/*" element={<DoctorRoutes />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signUp" element={<SignUp />} />
-      <Route path="/qr" element={<QrReader />} />
     </Routes>
   );
 }
