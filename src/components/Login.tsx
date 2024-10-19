@@ -1,12 +1,21 @@
-import { useState } from "react";
-import { loginUser } from "../api/Register/LoginApi";
-
+import { useEffect, useState } from "react";
+import { getAuthToken, loginUser } from "../api/Register/LoginApi";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = getAuthToken();
+    if (token != null) {
+      console.log("login true");
+      navigate("/");
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,10 +30,11 @@ export default function Login() {
         document.cookie = `authToken=${response.accessToken}; path=/; max-age=3600; SameSite=Lax`;
 
         // Handle other actions like redirect
-          console.log("Login successful. Token saved in cookie.");
-          setError(null);
-          setUsername("");
-          setPassword("");
+        console.log("Login successful. Token saved in cookie.");
+        navigate("/");
+        setError(null);
+        setUsername("");
+        setPassword("");
       } else {
         setError(response.message);
       }

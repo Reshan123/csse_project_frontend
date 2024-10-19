@@ -1,9 +1,9 @@
 // RecordsTable.tsx
-import React, { useContext, useState } from 'react';
-import { Table, Button } from 'antd';
-import type { TableColumnsType } from 'antd';
-import { MedicalRecordsContext } from '../../contexts/MedicalRecordsContext'; // Adjust the import according to your file structure
-import ViewRecord from './ViewRecord'; // Import the ViewRecord component
+import React, { useState } from "react";
+import { Table, Button } from "antd";
+import type { TableColumnsType } from "antd";
+import ViewRecord from "./ViewRecord"; // Import the ViewRecord component
+import { useMedicalRecords } from "../../hooks/useMedicalRecordsHook";
 
 export interface DataType {
   key: string;
@@ -22,11 +22,7 @@ export interface DataType {
 }
 
 const RecordsTable: React.FC = () => {
-  const context = useContext(MedicalRecordsContext); // Use the context here
-  if (!context) {
-    return <div>Error: MedicalRecordsContext is not provided.</div>;
-  }
-  const { data, loading } = context;
+  const { data, loading } = useMedicalRecords();
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
 
   const handleViewClick = (record: DataType) => {
@@ -39,47 +35,48 @@ const RecordsTable: React.FC = () => {
 
   const columns: TableColumnsType<DataType> = [
     {
-      title: 'Patient ID',
-      dataIndex: 'patientId',
+      title: "Patient ID",
+      dataIndex: "patientId",
       sorter: (a, b) => a.patientId.localeCompare(b.patientId),
-      sortDirections: ['descend', 'ascend'],
+      sortDirections: ["descend", "ascend"],
     },
     {
-      title: 'First Name',
-      dataIndex: 'firstName',
+      title: "First Name",
+      dataIndex: "firstName",
       sorter: (a, b) => a.firstName.localeCompare(b.firstName),
-      sortDirections: ['descend', 'ascend'],
+      sortDirections: ["descend", "ascend"],
     },
     {
-      title: 'Last Name',
-      dataIndex: 'lastName',
+      title: "Last Name",
+      dataIndex: "lastName",
       sorter: (a, b) => a.lastName.localeCompare(b.lastName),
-      sortDirections: ['descend', 'ascend'],
+      sortDirections: ["descend", "ascend"],
     },
     {
-      title: 'Date of Birth',
-      dataIndex: 'dateOfBirth',
-      sorter: (a, b) => new Date(a.dateOfBirth).getTime() - new Date(b.dateOfBirth).getTime(),
-      sortDirections: ['descend', 'ascend'],
+      title: "Date of Birth",
+      dataIndex: "dateOfBirth",
+      sorter: (a, b) =>
+        new Date(a.dateOfBirth).getTime() - new Date(b.dateOfBirth).getTime(),
+      sortDirections: ["descend", "ascend"],
     },
     {
-      title: 'Gender',
-      dataIndex: 'gender',
+      title: "Gender",
+      dataIndex: "gender",
       filters: [
-        { text: 'Male', value: 'Male' },
-        { text: 'Female', value: 'Female' },
+        { text: "Male", value: "Male" },
+        { text: "Female", value: "Female" },
       ],
       onFilter: (value, record) => record.gender === value,
     },
     {
-      title: 'Contact Number',
-      dataIndex: 'contactNumber',
+      title: "Contact Number",
+      dataIndex: "contactNumber",
       sorter: (a, b) => a.contactNumber.localeCompare(b.contactNumber),
-      sortDirections: ['descend', 'ascend'],
+      sortDirections: ["descend", "ascend"],
     },
     {
-      title: 'Action',
-      dataIndex: 'action',
+      title: "Action",
+      dataIndex: "action",
       render: (_, record) => (
         <Button type="link" onClick={() => handleViewClick(record)}>
           View

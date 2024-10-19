@@ -31,6 +31,7 @@ import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
+import { useNavigate } from "react-router-dom";
 
 const navigation = [
   { name: "Home", href: "/", icon: HomeIcon, current: true },
@@ -40,8 +41,18 @@ const navigation = [
     icon: ClockIcon,
     current: false,
   },
-  { name: "Add Medical Records", href: "/staff/addRecord", icon: PlusCircleIcon, current: false },
-  { name: "View Medical Records", href: "/staff/viewRecords", icon: ClipboardDocumentIcon, current: false },
+  {
+    name: "Add Medical Records",
+    href: "/staff/addRecord",
+    icon: PlusCircleIcon,
+    current: false,
+  },
+  {
+    name: "View Medical Records",
+    href: "/staff/viewRecords",
+    icon: ClipboardDocumentIcon,
+    current: false,
+  },
   { name: "Reports", href: "#", icon: CreditCardIcon, current: false },
   { name: "Payments", href: "#", icon: UserGroupIcon, current: false },
   { name: "Feedback", href: "#", icon: DocumentChartBarIcon, current: false },
@@ -58,6 +69,7 @@ function classNames(...classes: any) {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -294,12 +306,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                       </a>
                     </MenuItem>
                     <MenuItem>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
+                      <div
+                        className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 cursor-pointer"
+                        onClick={() => {
+                          document.cookie.split(";").forEach(function (c) {
+                            document.cookie = c
+                              .replace(/^ +/, "")
+                              .replace(
+                                /=.*/,
+                                "=;expires=" +
+                                  new Date().toUTCString() +
+                                  ";path=/"
+                              );
+                          });
+                          navigate("/login");
+                        }}
                       >
                         Logout
-                      </a>
+                      </div>
                     </MenuItem>
                   </MenuItems>
                 </Menu>
