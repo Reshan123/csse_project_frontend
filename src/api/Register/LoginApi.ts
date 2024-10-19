@@ -9,6 +9,7 @@ interface LoginResponse {
   success: boolean;
   message: string;
   accessToken?: string;
+  roles?: string[];
 }
 
 export const loginUser = async (data: LoginRequest): Promise<LoginResponse> => {
@@ -40,4 +41,19 @@ export const getAuthToken = (): string | null => {
   
   return token;
 };
+
+export const getRole = (): string | null => {
+  const role = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("userRole="))
+    ?.split("=")[1];
+
+  if (!role) {
+    console.error("No Role found");
+    return null;
+  }
+
+  return role;
+};
+
 

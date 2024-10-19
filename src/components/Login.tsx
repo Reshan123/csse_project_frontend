@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAuthToken, loginUser } from "../api/Register/LoginApi";
 import { useNavigate } from "react-router-dom";
+import { useUserRole } from "../hooks/useUserRoleHook";
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -8,6 +9,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { setRole } = useUserRole();
 
   useEffect(() => {
     const token = getAuthToken();
@@ -28,7 +30,9 @@ export default function Login() {
       if (response.accessToken) {
         // Save the token in the cookie
         document.cookie = `authToken=${response.accessToken}; path=/; max-age=3600; SameSite=Lax`;
-
+        const firstRole = response.roles?.[0] || "user";
+        document.cookie = `userRole=${firstRole}; path=/; max-age=3600; SameSite=Lax`;
+        setRole(firstRole);
         // Handle other actions like redirect
         console.log("Login successful. Token saved in cookie.");
         navigate("/");
