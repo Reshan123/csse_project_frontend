@@ -261,15 +261,12 @@ export default function PatientHome() {
                     />
                   </section>
                 </div>
-                <h2
-               
-                  className="text-xl font-medium leading-6 text-gray-900 px-5 pt-10 pb-3"
-                >
-                  Treatment Details
-                </h2>
 
                 {/* Activity list (smallest breakpoint only) */}
                 <div className="shadow sm:hidden ">
+                  <h2 className="text-xl font-medium leading-6 text-gray-900 px-5 pt-10 pb-3">
+                    Treatment Details
+                  </h2>
                   <ul
                     role="list"
                     className="mt-2 divide-y divide-gray-200 overflow-hidden sm:hidden bg-white p-4 sm:p-6 rounded-xl shadow-md"
@@ -310,10 +307,10 @@ export default function PatientHome() {
                 </div>
 
                 {/* Activity table (small breakpoint and up) */}
-                <div className="hidden sm:block">
-                  <div className="mx-auto max-w-6xl px-2 sm:px-2 lg:px-4">
+                <div className="hidden sm:block mt-6 ">
+                  <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-6">
                     <div className="mt-2 flex flex-col">
-                      <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+                      <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow-md sm:rounded-lg">
                         <TreatmentsTable
                           data={user?.medicalrecord?.treatments || []}
                           loading={loading}
