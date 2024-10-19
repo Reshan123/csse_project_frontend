@@ -6,11 +6,14 @@ export const getAppointments = async (
   token: string
 ): Promise<any> => {
   try {
-     const response = await axios.get(`/api/appointments/getpatient/${userId}`, {
-       headers: {
-         Authorization: `Bearer ${token}`,
-       },
-     });
+     const response = await axios.get(
+       `http://localhost:8000/api/appointments/getByPatientID/${userId}`,
+       {
+         headers: {
+           Authorization: `Bearer ${token}`,
+         },
+       }
+     );
     return response.data;
   } catch (error: any) {
     if (error.response && error.response.data) {

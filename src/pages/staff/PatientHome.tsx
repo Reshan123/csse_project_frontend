@@ -17,75 +17,32 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase.js";
 import { updateUser } from "../../api/Register/UpdateUserApi.js";
 import AllergiesList from "../../components/AllergyList.js";
-// const user = {
-//   name: "Whitney Francis",
-//   email: "whitney@example.com",
-//   imageUrl:
-//     "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-// };
+import UpcomingAppointments, {
+  Appointment,
+} from "../../components/Appointment/UpcomingAppointments.js";
+import { getAppointments } from "../../api/User/GetAppointments.js";
+import AppointmentDetails from "../../components/Modal/AppointmentDetails.js";
 const attachments = [
   { name: "resume_front_end_developer.pdf", href: "#" },
   { name: "coverletter_front_end_developer.pdf", href: "#" },
 ];
-// const eventTypes = {
-//   applied: { icon: UserIcon, bgColorClass: "bg-gray-400" },
-//   advanced: { icon: HandThumbUpIcon, bgColorClass: "bg-blue-500" },
-//   completed: { icon: CheckIcon, bgColorClass: "bg-green-500" },
-// };
-// const timeline = [
-//   {
-//     id: 1,
-//     type: eventTypes.applied,
-//     content: "Applied to",
-//     target: "Front End Developer",
-//     date: "Sep 20",
-//     datetime: "2020-09-20",
-//   },
-//   {
-//     id: 2,
-//     type: eventTypes.advanced,
-//     content: "Advanced to phone screening by",
-//     target: "Bethany Blake",
-//     date: "Sep 22",
-//     datetime: "2020-09-22",
-//   },
-//   {
-//     id: 3,
-//     type: eventTypes.completed,
-//     content: "Completed phone screening with",
-//     target: "Martha Gardner",
-//     date: "Sep 28",
-//     datetime: "2020-09-28",
-//   },
-//   {
-//     id: 4,
-//     type: eventTypes.advanced,
-//     content: "Advanced to interview by",
-//     target: "Bethany Blake",
-//     date: "Sep 30",
-//     datetime: "2020-09-30",
-//   },
-//   {
-//     id: 5,
-//     type: eventTypes.completed,
-//     content: "Completed interview with",
-//     target: "Katherine Snyder",
-//     date: "Oct 4",
-//     datetime: "2020-10-04",
-//   },
-// ];
-
-// function classNames(...classes: any) {
-//   return classes.filter(Boolean).join(" ");
-// }
 
 export default function PatientHome() {
   const { id } = useParams();
   const [userId, setUserId] = useState(id);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [appointments, setAppointments] = useState<any>([]);
   // const [medicalRecordAvailable, setMedicalRecordAvailable] = useState(true);
   const [user, setUser] = useState<UserResponse>();
   console.log(id);
+  const [appointmentDetailsModalOpen, setAppointmentDetailsModalOpen] =
+    useState<boolean>(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+
+  const openAppointmentDetails = (appointment: any) => {
+    setSelectedAppointment(appointment);
+    setAppointmentDetailsModalOpen(true);
+  };
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -103,7 +60,9 @@ export default function PatientHome() {
         }
 
         const user = await getPatientDetails(userId, token);
+        const appointments = await getAppointments(userId, token);
         setUser(user);
+        setAppointments(appointments);
         return true;
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -137,6 +96,13 @@ export default function PatientHome() {
         <body class="h-full">
         ```
       */}
+      <AppointmentDetails
+        title=""
+        open={appointmentDetailsModalOpen}
+        setOpen={setAppointmentDetailsModalOpen}
+        appointment={selectedAppointment}
+        onUpdate={() => {}}
+      />
       <div className="min-h-full">
         {userId ? (
           <main className="py-10">
@@ -190,7 +156,7 @@ export default function PatientHome() {
                 <div className="space-y-6 lg:col-span-2 lg:col-start-1">
                   {/* Description list*/}
                   <section aria-labelledby="applicant-information-title">
-                    <div className="bg-white shadow sm:rounded-lg">
+                    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md">
                       <div className="px-4 py-5 sm:px-6">
                         <h2
                           id="applicant-information-title"
@@ -266,10 +232,11 @@ export default function PatientHome() {
                           </div>
                           <div className="sm:col-span-2">
                             <dd className="mt-1 text-sm text-gray-900">
-                            <AllergiesList list={user?.medicalrecord?.allergies} />
+                              <AllergiesList
+                                list={user?.medicalrecord?.allergies}
+                              />
                             </dd>
                           </div>
-
                         </dl>
                       </div>
                     </div>
@@ -280,74 +247,10 @@ export default function PatientHome() {
                   aria-labelledby="timeline-title"
                   className="lg:col-span-4 lg:col-start-3"
                 >
-                  <div className="bg-white px-4 py-5 shadow sm:rounded-lg sm:px-6">
-                    <h2
-                      id="timeline-title"
-                      className="text-lg font-medium text-gray-900"
-                    >
-                      Appointments
-                    </h2>
-
-                    {/* Activity Feed */}
-                    {/* <div className="mt-6 flow-root">
-                      <ul role="list" className="-mb-8">
-                        {timeline.map((item, itemIdx) => (
-                          <li key={item.id}>
-                            <div className="relative pb-8">
-                              {itemIdx !== timeline.length - 1 ? (
-                                <span
-                                  aria-hidden="true"
-                                  className="absolute left-4 top-4 -ml-px h-full w-0.5 bg-gray-200"
-                                />
-                              ) : null}
-                              <div className="relative flex space-x-3">
-                                <div>
-                                  <span
-                                    className={classNames(
-                                      item.type.bgColorClass,
-                                      "flex h-8 w-8 items-center justify-center rounded-full ring-8 ring-white"
-                                    )}
-                                  >
-                                    <item.type.icon
-                                      aria-hidden="true"
-                                      className="h-5 w-5 text-white"
-                                    />
-                                  </span>
-                                </div>
-                                <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
-                                  <div>
-                                    <p className="text-sm text-gray-500">
-                                      {item.content}{" "}
-                                      <a
-                                        href="#"
-                                        className="font-medium text-gray-900"
-                                      >
-                                        {item.target}
-                                      </a>
-                                    </p>
-                                  </div>
-                                  <div className="whitespace-nowrap text-right text-sm text-gray-500">
-                                    <time dateTime={item.datetime}>
-                                      {item.date}
-                                    </time>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div> */}
-
-                    <div className="mt-6 flex flex-col justify-stretch">
-                      <button
-                        type="button"
-                        className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
-                      >
-                        Add Appointment
-                      </button>
-                    </div>
-                  </div>
+                  <UpcomingAppointments
+                    appointments={appointments}
+                    onAppointmentClick={openAppointmentDetails}
+                  />
                 </section>
               </div>
             ) : (
