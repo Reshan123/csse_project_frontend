@@ -1,14 +1,16 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
-import PatientRoutes from "./views/PatientRoutes";
-import StaffRoutes from "./views/StaffRoutes";
-import DoctorRoutes from "./views/DoctorRoutes";
-import Login from "./components/Login";
-import SignUp from "./components/Signup";
-import StaffSideBar from "./components/StaffSideBar";
-import StaffHome from "./pages/Patient/StaffHome";
-import QrReader from "./components/QRreader";
-import { getAuthToken } from "./api/Register/LoginApi";
-import { useEffect } from "react";
+import { BrowserRouter, Navigate, Route, Routes, useNavigate } from "react-router-dom"
+import PatientRoutes from "./views/PatientRoutes"
+import StaffRoutes from "./views/StaffRoutes"
+import DoctorRoutes from "./views/DoctorRoutes"
+import Login from './components/Login'
+import SignUp from './components/Signup'
+import Layout from "./components/Layout"
+import Home from "./pages/Patient/Appointment/AppointmentHome"
+import StaffHome from "./pages/Patient/StaffHome"
+import QrReader from "./components/QRreader"
+import { getAuthToken } from "./api/Register/LoginApi"
+import { useEffect } from "react"
+
 
 function App() {
   const navigate = useNavigate();
