@@ -1,5 +1,6 @@
 import React, { createContext, ReactNode, useState, useEffect } from "react";
 import { getRole } from "../api/Register/LoginApi";
+import Loader from "../components/Loader/Loader";
 
 interface UserRoleType {
   role: string;
@@ -29,7 +30,7 @@ export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({
   }, [role]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   return (

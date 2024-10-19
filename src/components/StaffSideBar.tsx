@@ -34,13 +34,13 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const navigation = [
-  { name: "Home", href: "/", icon: HomeIcon, current: true },
-  {
-    name: "Appoinments",
-    href: "/patient/appointment/",
-    icon: ClockIcon,
-    current: false,
-  },
+  // { name: "Home", href: "/", icon: HomeIcon, current: true },
+  // {
+  //   name: "Appoinments",
+  //   href: "/patient/appointment/",
+  //   icon: ClockIcon,
+  //   current: false,
+  // },
   {
     name: "Add Medical Records",
     href: "/staff/addRecord",
@@ -53,9 +53,14 @@ const navigation = [
     icon: ClipboardDocumentIcon,
     current: false,
   },
-  { name: "Reports", href: "/staff/report", icon: CreditCardIcon, current: false },
-  { name: "Payments", href: "#", icon: UserGroupIcon, current: false },
-  { name: "Feedback", href: "#", icon: DocumentChartBarIcon, current: false },
+  {
+    name: "Reports",
+    href: "/staff/report",
+    icon: CreditCardIcon,
+    current: false,
+  },
+  // { name: "Payments", href: "#", icon: UserGroupIcon, current: false },
+  // { name: "Feedback", href: "#", icon: DocumentChartBarIcon, current: false },
 ];
 const secondaryNavigation = [
   { name: "Settings", href: "#", icon: CogIcon },
@@ -67,7 +72,11 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function StaffSideBar({ children }: { children: React.ReactNode }) {
+export default function StaffSideBar({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 

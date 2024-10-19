@@ -1,10 +1,4 @@
-import {
-  Navigate,
-  Route,
-  Routes,
-  useNavigate,
-  Outlet,
-} from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate, Outlet } from "react-router-dom";
 import PatientRoutes from "./views/PatientRoutes";
 import StaffRoutes from "./views/StaffRoutes";
 import DoctorRoutes from "./views/DoctorRoutes";
@@ -18,6 +12,7 @@ import StaffSideBar from "./components/StaffSideBar";
 import { useUserRole } from "./hooks/useUserRoleHook";
 import PatientSideBar from "./components/PatientSideBar";
 import Unauthorized from "./pages/Unauthorized";
+import Loader from "./components/Loader/Loader";
 
 function App() {
   const navigate = useNavigate();
@@ -31,7 +26,7 @@ function App() {
   }, [navigate]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
 
   return (

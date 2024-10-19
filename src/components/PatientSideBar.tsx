@@ -26,7 +26,10 @@ import {
 } from "@heroicons/react/24/outline";
 import {
   ChevronDownIcon,
+  CogIcon,
   MagnifyingGlassIcon,
+  QuestionMarkCircleIcon,
+  ShieldCheckIcon,
 } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
 
@@ -38,32 +41,32 @@ const navigation = [
     icon: ClockIcon,
     current: false,
   },
-  {
-    name: "Add Medical Records",
-    href: "/staff/addRecord",
-    icon: PlusCircleIcon,
-    current: false,
-  },
-  {
-    name: "View Medical Records",
-    href: "/staff/viewRecords",
-    icon: ClipboardDocumentIcon,
-    current: false,
-  },
-  {
-    name: "Reports",
-    href: "/staff/report",
-    icon: CreditCardIcon,
-    current: false,
-  },
+  // {
+  //   name: "Add Medical Records",
+  //   href: "/staff/addRecord",
+  //   icon: PlusCircleIcon,
+  //   current: false,
+  // },
+  // {
+  //   name: "View Medical Records",
+  //   href: "/staff/viewRecords",
+  //   icon: ClipboardDocumentIcon,
+  //   current: false,
+  // },
+  // {
+  //   name: "Reports",
+  //   href: "/staff/report",
+  //   icon: CreditCardIcon,
+  //   current: false,
+  // },
   { name: "Payments", href: "#", icon: UserGroupIcon, current: false },
   { name: "Feedback", href: "#", icon: DocumentChartBarIcon, current: false },
 ];
-// const secondaryNavigation = [
-//   { name: "Settings", href: "#", icon: CogIcon },
-//   { name: "Help", href: "#", icon: QuestionMarkCircleIcon },
-//   { name: "Privacy", href: "#", icon: ShieldCheckIcon },
-// ];
+const secondaryNavigation = [
+  { name: "Settings", href: "#", icon: CogIcon },
+  { name: "Help", href: "#", icon: QuestionMarkCircleIcon },
+  { name: "Privacy", href: "#", icon: ShieldCheckIcon },
+];
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -143,7 +146,7 @@ export default function PatientSideBar({
                     </a>
                   ))}
                 </div>
-                {/* <div className="mt-6 pt-6">
+                <div className="mt-6 pt-6">
                   <div className="space-y-1 px-2">
                     {secondaryNavigation.map((item) => (
                       <a
@@ -159,7 +162,7 @@ export default function PatientSideBar({
                       </a>
                     ))}
                   </div>
-                </div> */}
+                </div>
               </nav>
             </DialogPanel>
             <div aria-hidden="true" className="w-14 flex-shrink-0">
@@ -203,7 +206,7 @@ export default function PatientSideBar({
                   </a>
                 ))}
               </div>
-              {/* <div className="mt-6 pt-6">
+              <div className="mt-6 pt-6">
                 <div className="space-y-1 px-2">
                   {secondaryNavigation.map((item) => (
                     <a
@@ -219,7 +222,7 @@ export default function PatientSideBar({
                     </a>
                   ))}
                 </div>
-              </div> */}
+              </div>
             </nav>
           </div>
         </div>
