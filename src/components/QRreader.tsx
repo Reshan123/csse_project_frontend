@@ -28,7 +28,7 @@ const QrReader = () => {
       try {
         const validationResponse = await validateUser(result.data);
         if (validationResponse.valid) {
-          navigate(`/patient/home/${result.data}`); 
+          navigate(`staff/home/${result.data}`); 
         } else {
           alert("Invalid User ID. Please try again.");
         }

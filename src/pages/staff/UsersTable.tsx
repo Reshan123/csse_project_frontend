@@ -23,7 +23,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ data,loading }) => {
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
  const navigate = useNavigate(); 
   const handleViewClick = (record: DataType) => {
-     navigate(`/patient/home/${record.id}`); 
+     navigate(`staff/home/${record.id}`); 
   };
 
   const handleBack = () => {

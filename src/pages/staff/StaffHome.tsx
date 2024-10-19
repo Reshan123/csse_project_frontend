@@ -30,8 +30,6 @@ import { getUsers } from "../../api/Register/FetchUsersApi";
 import { User } from "../../types/User";
 import UsersTable, { DataType } from "./UsersTable";
 
-
-
 const StaffHome = () => {
   const [username, setUsername] = React.useState("John Doe");
   const [role, setRole] = React.useState("staff");
@@ -72,10 +70,10 @@ const StaffHome = () => {
 
   const mapUserToDataType = (user: User): DataType => {
     return {
-      id: user.id ?? "", 
+      id: user.id ?? "",
       username: user.username,
       email: user.email,
-      link: user.link ?? "", 
+      link: user.link ?? "",
     };
   };
   const cards = [
@@ -274,44 +272,41 @@ const StaffHome = () => {
           </h2>
 
           {/* Activity list (smallest breakpoint only) */}
-          <div className="shadow sm:hidden">
+          <div className="shadow sm:hidden p-4">
             <ul
               role="list"
-              className="mt-2 divide-y divide-gray-200 overflow-hidden shadow sm:hidden"
+              className="mt-2 divide-y divide-gray-200 overflow-hidden sm:hidden bg-white p-4 sm:p-6 rounded-xl shadow-md"
             >
-              {transactions.map((transaction) => (
-                <li key={transaction.id}>
-                  <a
-                    href={transaction.href}
-                    className="block bg-white px-4 py-4 hover:bg-gray-50"
-                  >
-                    <span className="flex items-center space-x-4">
-                      <span className="flex flex-1 space-x-2 truncate">
-                        <BanknotesIcon
+              {users &&
+                users.map((user) => (
+                  <li key={user.id}>
+                    <a
+                      href={`staff/home/${user.id}`}
+                      className="block bg-white px-4 py-4 hover:bg-gray-50"
+                    >
+                      <span className="flex items-center space-x-4">
+                        <span className="flex flex-1 space-x-2 truncate">
+                          <BanknotesIcon
+                            aria-hidden="true"
+                            className="h-5 w-5 flex-shrink-0 text-gray-400"
+                          />
+                          <span className="flex flex-col truncate text-sm text-gray-500">
+                            <span className="truncate">{user.username}</span>
+                            <span>
+                              <span className="font-medium text-gray-900">
+                                {user.email}
+                              </span>{" "}
+                            </span>
+                          </span>
+                        </span>
+                        <ChevronRightIcon
                           aria-hidden="true"
                           className="h-5 w-5 flex-shrink-0 text-gray-400"
                         />
-                        <span className="flex flex-col truncate text-sm text-gray-500">
-                          <span className="truncate">{transaction.name}</span>
-                          <span>
-                            <span className="font-medium text-gray-900">
-                              {transaction.amount}
-                            </span>{" "}
-                            {transaction.currency}
-                          </span>
-                          <time dateTime={transaction.datetime}>
-                            {transaction.date}
-                          </time>
-                        </span>
                       </span>
-                      <ChevronRightIcon
-                        aria-hidden="true"
-                        className="h-5 w-5 flex-shrink-0 text-gray-400"
-                      />
-                    </span>
-                  </a>
-                </li>
-              ))}
+                    </a>
+                  </li>
+                ))}
             </ul>
           </div>
 

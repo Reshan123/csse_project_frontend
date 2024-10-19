@@ -4,7 +4,7 @@ import {
   PaperClipIcon,
   // UserIcon,
 } from "@heroicons/react/20/solid";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import { BanknotesIcon, ChevronRightIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { removeUser } from "../../api/Register/RemoveUserApi";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,6 +22,7 @@ import UpcomingAppointments, {
 } from "../../components/Appointment/UpcomingAppointments.js";
 import { getAppointments } from "../../api/User/GetAppointments.js";
 import AppointmentDetails from "../../components/Modal/AppointmentDetails.js";
+import TreatmentsTable from "./TreatmentsTable.js";
 const attachments = [
   { name: "resume_front_end_developer.pdf", href: "#" },
   { name: "coverletter_front_end_developer.pdf", href: "#" },
@@ -38,6 +39,7 @@ export default function PatientHome() {
   const [appointmentDetailsModalOpen, setAppointmentDetailsModalOpen] =
     useState<boolean>(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const openAppointmentDetails = (appointment: any) => {
     setSelectedAppointment(appointment);
@@ -48,6 +50,7 @@ export default function PatientHome() {
   useEffect(() => {
     // id == undefined && setUserId(id);
     const fetchUser = async (userId: string) => {
+      setLoading(true);
       try {
         const token = document.cookie
           .split("; ")
@@ -63,9 +66,11 @@ export default function PatientHome() {
         const appointments = await getAppointments(userId, token);
         setUser(user);
         setAppointments(appointments);
+        setLoading(false);
         return true;
       } catch (error) {
         console.error("Error fetching user:", error);
+        setLoading(false);
       }
     };
     if (id) {
@@ -152,106 +157,171 @@ export default function PatientHome() {
             </div>
 
             {user?.medicalrecord ? (
-              <div className="mx-auto mt-8 grid max-w-3xl grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
-                <div className="space-y-6 lg:col-span-2 lg:col-start-1">
-                  {/* Description list*/}
-                  <section aria-labelledby="applicant-information-title">
-                    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md">
-                      <div className="px-4 py-5 sm:px-6">
-                        <h2
-                          id="applicant-information-title"
-                          className="text-lg font-medium leading-6 text-gray-900"
-                        >
-                          Medical Record
-                        </h2>
-                        <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                          Patient's medical details and information.
-                        </p>
-                      </div>
-                      <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                        <dl className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-2 lg:sm:grid-cols-2">
-                          <div className="sm:col-span-1">
-                            <dt className="text-sm font-medium text-gray-500">
-                              Patient ID
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {user?.medicalrecord?.patientId}
-                            </dd>
-                          </div>
-                          <div className="sm:col-span-1">
-                            <dt className="text-sm font-medium text-gray-500">
-                              Age
-                            </dt>
-                            {user && (
+              <div>
+                <div className="mx-auto mt-8 grid max-w-3xl grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
+                  <div className="space-y-6 lg:col-span-2 lg:col-start-1">
+                    {/* Description list*/}
+                    <section aria-labelledby="applicant-information-title">
+                      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md">
+                        <div className="px-4 py-5 sm:px-6">
+                          <h2
+                            id="applicant-information-title"
+                            className="text-lg font-medium leading-6 text-gray-900"
+                          >
+                            Medical Record
+                          </h2>
+                          <p className="mt-1 max-w-2xl text-sm text-gray-500">
+                            Patient's medical details and information.
+                          </p>
+                        </div>
+                        <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+                          <dl className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-2 lg:sm:grid-cols-2">
+                            <div className="sm:col-span-1">
+                              <dt className="text-sm font-medium text-gray-500">
+                                Patient ID
+                              </dt>
                               <dd className="mt-1 text-sm text-gray-900">
-                                {
-                                  calculateAge(user?.medicalrecord?.dateOfBirth)
-                                    .years
-                                }{" "}
-                                years ,{" "}
-                                {
-                                  calculateAge(user?.medicalrecord?.dateOfBirth)
-                                    .months
-                                }{" "}
-                                months.
+                                {user?.medicalrecord?.patientId}
                               </dd>
-                            )}
-                          </div>
+                            </div>
+                            <div className="sm:col-span-1">
+                              <dt className="text-sm font-medium text-gray-500">
+                                Age
+                              </dt>
+                              {user && (
+                                <dd className="mt-1 text-sm text-gray-900">
+                                  {
+                                    calculateAge(
+                                      user?.medicalrecord?.dateOfBirth
+                                    ).years
+                                  }{" "}
+                                  years ,{" "}
+                                  {
+                                    calculateAge(
+                                      user?.medicalrecord?.dateOfBirth
+                                    ).months
+                                  }{" "}
+                                  months.
+                                </dd>
+                              )}
+                            </div>
 
-                          <div className="sm:col-span-1">
-                            <dt className="text-sm font-medium text-red-500">
-                              Emergency Contact Name
-                            </dt>
-                            <dd className="mt-1 text-sm text-red-900 font-semibold">
-                              {user?.medicalrecord?.emergencyContactName}
-                            </dd>
-                          </div>
-                          <div className="sm:col-span-1">
-                            <dt className="text-sm font-medium text-red-500">
-                              Emergency Contact Number
-                            </dt>
-                            <dd className="mt-1 text-sm text-red-900 font-semibold">
-                              {user?.medicalrecord?.emergencyContactNumber}
-                            </dd>
-                          </div>
-                          <div className="sm:col-span-1">
-                            <dt className="text-sm font-medium text-gray-500">
-                              Address
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {user?.medicalrecord?.address}
-                            </dd>
-                          </div>
-                          <div className="sm:col-span-1">
-                            <dt className="text-sm font-medium text-gray-500">
-                              Phone
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-900">
-                              {user?.medicalrecord?.contactNumber}
-                            </dd>
-                          </div>
-                          <div className="sm:col-span-2">
-                            <dd className="mt-1 text-sm text-gray-900">
-                              <AllergiesList
-                                list={user?.medicalrecord?.allergies}
-                              />
-                            </dd>
-                          </div>
-                        </dl>
+                            <div className="sm:col-span-1">
+                              <dt className="text-sm font-medium text-red-500">
+                                Emergency Contact Name
+                              </dt>
+                              <dd className="mt-1 text-sm text-red-900 font-semibold">
+                                {user?.medicalrecord?.emergencyContactName}
+                              </dd>
+                            </div>
+                            <div className="sm:col-span-1">
+                              <dt className="text-sm font-medium text-red-500">
+                                Emergency Contact Number
+                              </dt>
+                              <dd className="mt-1 text-sm text-red-900 font-semibold">
+                                {user?.medicalrecord?.emergencyContactNumber}
+                              </dd>
+                            </div>
+                            <div className="sm:col-span-1">
+                              <dt className="text-sm font-medium text-gray-500">
+                                Address
+                              </dt>
+                              <dd className="mt-1 text-sm text-gray-900">
+                                {user?.medicalrecord?.address}
+                              </dd>
+                            </div>
+                            <div className="sm:col-span-1">
+                              <dt className="text-sm font-medium text-gray-500">
+                                Phone
+                              </dt>
+                              <dd className="mt-1 text-sm text-gray-900">
+                                {user?.medicalrecord?.contactNumber}
+                              </dd>
+                            </div>
+                            <div className="sm:col-span-2">
+                              <dd className="mt-1 text-sm text-gray-900">
+                                <AllergiesList
+                                  list={user?.medicalrecord?.allergies}
+                                />
+                              </dd>
+                            </div>
+                          </dl>
+                        </div>
                       </div>
-                    </div>
+                    </section>
+                  </div>
+
+                  <section
+                    aria-labelledby="timeline-title"
+                    className="lg:col-span-4 lg:col-start-3"
+                  >
+                    <UpcomingAppointments
+                      appointments={appointments}
+                      onAppointmentClick={openAppointmentDetails}
+                    />
                   </section>
                 </div>
-
-                <section
-                  aria-labelledby="timeline-title"
-                  className="lg:col-span-4 lg:col-start-3"
+                <h2
+               
+                  className="text-xl font-medium leading-6 text-gray-900 px-5 pt-10 pb-3"
                 >
-                  <UpcomingAppointments
-                    appointments={appointments}
-                    onAppointmentClick={openAppointmentDetails}
-                  />
-                </section>
+                  Treatment Details
+                </h2>
+
+                {/* Activity list (smallest breakpoint only) */}
+                <div className="shadow sm:hidden ">
+                  <ul
+                    role="list"
+                    className="mt-2 divide-y divide-gray-200 overflow-hidden sm:hidden bg-white p-4 sm:p-6 rounded-xl shadow-md"
+                  >
+                    {user?.medicalrecord?.treatments &&
+                      user?.medicalrecord?.treatments.map((treatment) => (
+                        <li key={user.id}>
+                          <a
+                            href={`staff/home/${user.id}`}
+                            className="block bg-white px-4 py-4 hover:bg-gray-50"
+                          >
+                            <span className="flex items-center space-x-4">
+                              <span className="flex flex-1 space-x-2 truncate">
+                                <BanknotesIcon
+                                  aria-hidden="true"
+                                  className="h-5 w-5 flex-shrink-0 text-gray-400"
+                                />
+                                <span className="flex flex-col truncate text-sm text-gray-500">
+                                  <span className="truncate">
+                                    {treatment.treatmentType}
+                                  </span>
+                                  <span>
+                                    <span className="font-medium text-gray-900">
+                                      {treatment.prescription}
+                                    </span>{" "}
+                                  </span>
+                                </span>
+                              </span>
+                              <ChevronRightIcon
+                                aria-hidden="true"
+                                className="h-5 w-5 flex-shrink-0 text-gray-400"
+                              />
+                            </span>
+                          </a>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+
+                {/* Activity table (small breakpoint and up) */}
+                <div className="hidden sm:block">
+                  <div className="mx-auto max-w-6xl px-2 sm:px-2 lg:px-4">
+                    <div className="mt-2 flex flex-col">
+                      <div className="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg">
+                        <TreatmentsTable
+                          data={user?.medicalrecord?.treatments || []}
+                          loading={loading}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             ) : (
               <main className="grid min-h-full place-items-center bg-white px-6 py-24 sm:py-32 lg:px-8">

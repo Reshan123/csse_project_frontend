@@ -12,4 +12,15 @@ export interface MedicalRecord {
   ongoingMedications: string[];
   emergencyContactName: string;
   emergencyContactNumber: string;
+  treatments?: Treatment[];
+}
+
+
+interface Treatment {
+  id: string;
+  patientID: string;
+  aptNo: string;
+  treatmentType: string;
+  prescription: string;
+  contactInfo: string;
 }
