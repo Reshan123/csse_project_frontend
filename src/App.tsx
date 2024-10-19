@@ -1,5 +1,4 @@
 import {
-  BrowserRouter,
   Navigate,
   Route,
   Routes,
@@ -11,16 +10,18 @@ import StaffRoutes from "./views/StaffRoutes";
 import DoctorRoutes from "./views/DoctorRoutes";
 import Login from "./components/Login";
 import SignUp from "./components/Signup";
-import Home from "./pages/Patient/Appointment/AppointmentHome";
-import { getAuthToken, getRole } from "./api/Register/LoginApi";
-import { useEffect, useState } from "react";
+// import Home from "./pages/Patient/Appointment/AppointmentHome";
+import { getAuthToken } from "./api/Register/LoginApi";
+import { useEffect } from "react";
 import StaffSideBar from "./components/StaffSideBar";
-import StaffHome from "./pages/staff/StaffHome";
+// import StaffHome from "./pages/staff/StaffHome";
 import { useUserRole } from "./hooks/useUserRoleHook";
+import PatientSideBar from "./components/PatientSideBar";
+import Unauthorized from "./pages/Unauthorized";
 
 function App() {
   const navigate = useNavigate();
-  const { role } = useUserRole();
+  const { role, loading } = useUserRole();
 
   useEffect(() => {
     const token = getAuthToken();
@@ -29,9 +30,13 @@ function App() {
     }
   }, [navigate]);
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <Routes>
-      <Route element={role == "ROLE_USER" ? <Outlet /> : null}>
+      {/* <Route element={role == "ROLE_USER" ? <Outlet /> : null}>
         <Route
           path="/"
           element={
@@ -40,19 +45,28 @@ function App() {
             </StaffSideBar>
           }
         />
-      </Route>
-      {/* <Route element={role == "" ? <Outlet /> : null}>
+      </Route> */}
+
+      <Route
+        element={
+          role == "ROLE_USER" ? <Outlet /> : <Navigate to="/unauthorized" />
+        }
+      >
         <Route
           path="/patient/*"
           element={
-            <StaffSideBar>
+            <PatientSideBar>
               <PatientRoutes />
-            </StaffSideBar>
+            </PatientSideBar>
           }
         />
-      </Route> */}
+      </Route>
 
-      <Route element={role == "ROLE_ADMIN" ? <Outlet /> : null}>
+      <Route
+        element={
+          role == "ROLE_ADMIN" ? <Outlet /> : <Navigate to="/unauthorized" />
+        }
+      >
         <Route
           path="/staff/*"
           element={
@@ -63,12 +77,21 @@ function App() {
         />
       </Route>
 
-      <Route element={role == "ROLE_MODERATOR" ? <Outlet /> : <Outlet />}>
+      <Route
+        element={
+          role == "ROLE_MODERATOR" ? (
+            <Outlet />
+          ) : (
+            <Navigate to="/unauthorized" />
+          )
+        }
+      >
         <Route path="/doctor/*" element={<DoctorRoutes />} />
       </Route>
 
       <Route path="/login" element={<Login />} />
       <Route path="/signUp" element={<SignUp />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
     </Routes>
   );
 }

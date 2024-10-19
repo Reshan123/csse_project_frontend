@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAuthToken, loginUser } from "../api/Register/LoginApi";
+import { getAuthToken, getRole, loginUser } from "../api/Register/LoginApi";
 import { useNavigate } from "react-router-dom";
 import { useUserRole } from "../hooks/useUserRoleHook";
 
@@ -32,7 +32,8 @@ export default function Login() {
         document.cookie = `authToken=${response.accessToken}; path=/; max-age=3600; SameSite=Lax`;
         const firstRole = response.roles?.[0] || "user";
         document.cookie = `userRole=${firstRole}; path=/; max-age=3600; SameSite=Lax`;
-        setRole(firstRole);
+        const cookieRole = getRole();
+        setRole(cookieRole);
         // Handle other actions like redirect
         console.log("Login successful. Token saved in cookie.");
         navigate("/");

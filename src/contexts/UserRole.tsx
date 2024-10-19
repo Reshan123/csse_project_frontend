@@ -14,17 +14,23 @@ export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [role, setRole] = useState("");
+  const [loading, setLoading] = useState(true); // loading state
 
   useEffect(() => {
     const cookieRole = getRole();
     if (cookieRole) {
       setRole(cookieRole);
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
     console.log(role);
   }, [role]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <UserRoleContext.Provider value={{ role, setRole }}>

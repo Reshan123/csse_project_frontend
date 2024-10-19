@@ -12,17 +12,15 @@ import { UserRoleProvider } from "./contexts/UserRole.tsx";
 axios.defaults.baseURL = "http://localhost:8000/";
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <ThemeProvider>
-        <MedicalRecordsProvider>
-          <AppointmentsProvider>
-            <UserRoleProvider>
-              <App />
-            </UserRoleProvider>
-          </AppointmentsProvider>
-        </MedicalRecordsProvider>
-      </ThemeProvider>
-    </BrowserRouter>
-  </StrictMode>
+  <BrowserRouter>
+    <ThemeProvider>
+      <MedicalRecordsProvider>
+        <AppointmentsProvider>
+          <UserRoleProvider>
+            <App />
+          </UserRoleProvider>
+        </AppointmentsProvider>
+      </MedicalRecordsProvider>
+    </ThemeProvider>
+  </BrowserRouter>
 );

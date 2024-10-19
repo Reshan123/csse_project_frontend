@@ -16,14 +16,11 @@ import {
   Bars3CenterLeftIcon,
   BellIcon,
   ClockIcon,
-  CogIcon,
   CreditCardIcon,
   DocumentChartBarIcon,
   HomeIcon,
-  QuestionMarkCircleIcon,
   PlusCircleIcon,
   ClipboardDocumentIcon,
-  ShieldCheckIcon,
   UserGroupIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
@@ -53,21 +50,30 @@ const navigation = [
     icon: ClipboardDocumentIcon,
     current: false,
   },
-  { name: "Reports", href: "/staff/report", icon: CreditCardIcon, current: false },
+  {
+    name: "Reports",
+    href: "/staff/report",
+    icon: CreditCardIcon,
+    current: false,
+  },
   { name: "Payments", href: "#", icon: UserGroupIcon, current: false },
   { name: "Feedback", href: "#", icon: DocumentChartBarIcon, current: false },
 ];
-const secondaryNavigation = [
-  { name: "Settings", href: "#", icon: CogIcon },
-  { name: "Help", href: "#", icon: QuestionMarkCircleIcon },
-  { name: "Privacy", href: "#", icon: ShieldCheckIcon },
-];
+// const secondaryNavigation = [
+//   { name: "Settings", href: "#", icon: CogIcon },
+//   { name: "Help", href: "#", icon: QuestionMarkCircleIcon },
+//   { name: "Privacy", href: "#", icon: ShieldCheckIcon },
+// ];
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function StaffSideBar({ children }: { children: React.ReactNode }) {
+export default function PatientSideBar({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -137,7 +143,7 @@ export default function StaffSideBar({ children }: { children: React.ReactNode }
                     </a>
                   ))}
                 </div>
-                <div className="mt-6 pt-6">
+                {/* <div className="mt-6 pt-6">
                   <div className="space-y-1 px-2">
                     {secondaryNavigation.map((item) => (
                       <a
@@ -153,7 +159,7 @@ export default function StaffSideBar({ children }: { children: React.ReactNode }
                       </a>
                     ))}
                   </div>
-                </div>
+                </div> */}
               </nav>
             </DialogPanel>
             <div aria-hidden="true" className="w-14 flex-shrink-0">
@@ -197,7 +203,7 @@ export default function StaffSideBar({ children }: { children: React.ReactNode }
                   </a>
                 ))}
               </div>
-              <div className="mt-6 pt-6">
+              {/* <div className="mt-6 pt-6">
                 <div className="space-y-1 px-2">
                   {secondaryNavigation.map((item) => (
                     <a
@@ -213,7 +219,7 @@ export default function StaffSideBar({ children }: { children: React.ReactNode }
                     </a>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </nav>
           </div>
         </div>
