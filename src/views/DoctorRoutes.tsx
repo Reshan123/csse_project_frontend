@@ -1,9 +1,12 @@
-import { Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 const DoctorRoutes = () => {
   return (
     <>
-      <Routes></Routes>
+      <Routes>
+        {/* <Route path="/home/" element={} /> */}
+        {/* <Route path="/appointment/*" element={<AppointmentRoutes />} /> */}
+      </Routes>
     </>
   );
 };

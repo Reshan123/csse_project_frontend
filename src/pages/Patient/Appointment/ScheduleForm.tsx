@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { Calendar, User, Stethoscope, FileText, Building } from 'lucide-react';
 import axios from 'axios';
+import { getUserIdFromJwtCookie } from '../../../util/jwtDecode';
+
+console.log("Token", getUserIdFromJwtCookie());
 
 const ScheduleForm = () => {
   const [appointment, setAppointment] = useState({
+    patientID: getUserIdFromJwtCookie(),
     appointmentDate: '',
     patientName: '',
     docName: '',

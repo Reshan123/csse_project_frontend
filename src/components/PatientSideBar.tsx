@@ -1,7 +1,7 @@
 // components/Layout.tsx
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -31,37 +31,15 @@ import {
   QuestionMarkCircleIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/20/solid";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const navigation = [
-  { name: "Home", href: "/", icon: HomeIcon, current: true },
-  {
-    name: "Appoinments",
-    href: "/patient/appointment/",
-    icon: ClockIcon,
-    current: false,
-  },
-  // {
-  //   name: "Add Medical Records",
-  //   href: "/staff/addRecord",
-  //   icon: PlusCircleIcon,
-  //   current: false,
-  // },
-  // {
-  //   name: "View Medical Records",
-  //   href: "/staff/viewRecords",
-  //   icon: ClipboardDocumentIcon,
-  //   current: false,
-  // },
-  // {
-  //   name: "Reports",
-  //   href: "/staff/report",
-  //   icon: CreditCardIcon,
-  //   current: false,
-  // },
+const initialNavigation = [
+  { name: "Home", href: "/patient/home/", icon: HomeIcon, current: false },
+  { name: "Appointments", href: "/patient/appointment/", icon: ClockIcon, current: false },
   { name: "Payments", href: "#", icon: UserGroupIcon, current: false },
   { name: "Feedback", href: "#", icon: DocumentChartBarIcon, current: false },
 ];
+
 const secondaryNavigation = [
   { name: "Settings", href: "#", icon: CogIcon },
   { name: "Help", href: "#", icon: QuestionMarkCircleIcon },
@@ -78,7 +56,41 @@ export default function PatientSideBar({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [navigation, setNavigation] = useState(initialNavigation);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  React.useEffect(() => {
+    setNavigation(prevNav =>
+      prevNav.map(item => ({
+        ...item,
+        current: item.href === location.pathname
+      }))
+    );
+  }, [location]);
+
+  const handleNavigation = (item: { name: string; href: string; icon: React.ComponentType; current: boolean }) => {
+    navigate(item.href);
+    setSidebarOpen(false);
+  };
+
+  const renderNavItems = (items: { name: string; href: string; icon: React.ComponentType; current: boolean }[]) => items.map((item) => (
+    <a
+      key={item.name}
+      onClick={() => handleNavigation(item)}
+      className={classNames(
+        item.current
+          ? "bg-teal-800 text-white"
+          : "text-teal-100 hover:bg-teal-600 hover:text-white",
+        "group flex items-center rounded-md px-2 py-2 text-sm font-medium leading-6 cursor-pointer"
+      )}
+    >
+      <item.icon
+        aria-hidden="true"
+      />
+      {item.name}
+    </a>
+  ));
 
   return (
     <>
@@ -125,6 +137,9 @@ export default function PatientSideBar({
                 aria-label="Sidebar"
                 className="mt-5 h-full flex-shrink-0 divide-y divide-teal-800 overflow-y-auto"
               >
+                <div className="space-y-1 px-2">
+                  {renderNavItems(navigation)}
+                </div>
                 <div className="space-y-1 px-2">
                   {navigation.map((item) => (
                     <a

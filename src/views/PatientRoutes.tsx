@@ -1,13 +1,13 @@
 import { Route, Routes } from "react-router-dom";
 import AppointmentRoutes from "../pages/Patient/Appointment/AppointmentRoutes";
-import PatientHome from "../pages/staff/PatientHome";
+import PatientHomePage from "../pages/Patient/Home/PatientHomePage";
 
 const PatientRoutes = () => {
   return (
     <>
       {/* <NavBar/> */}
       <Routes>
-        <Route path="/home/:id" element={<PatientHome />} />
+        <Route path="/home/" element={<PatientHomePage />} />
         <Route path="/appointment/*" element={<AppointmentRoutes />} />
       </Routes>
     </>

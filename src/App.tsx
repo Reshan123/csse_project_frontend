@@ -81,7 +81,13 @@ function App() {
           )
         }
       >
-        <Route path="/doctor/*" element={<DoctorRoutes />} />
+        <Route path="/doctor/*" 
+          element={
+            <StaffSideBar>
+              <DoctorRoutes />
+            </StaffSideBar>
+          } 
+        />
       </Route>
 
       <Route path="/login" element={<Login />} />
