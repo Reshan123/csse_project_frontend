@@ -14,6 +14,7 @@ import {
 import { useEffect, useState } from "react";
 import { getAuthToken } from "../../api/Register/LoginApi";
 import axios from "axios";
+import ReportScheduler from "../../components/ReportScheduler/ReportScheduler";
 
 // Register the chart components
 ChartJS.register(
@@ -252,7 +253,9 @@ const ReportScreen: React.FC = () => {
           Analytics Dashboard
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <ReportScheduler />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
           <ChartCard title="Treatments Per Patient">
             <Line data={treatmentsPerPatientChartConfig} options={options} />
           </ChartCard>
