@@ -7,6 +7,7 @@ import axios from "axios";
 import { MedicalRecordsProvider } from "./contexts/MedicalRecordsContext.tsx";
 import { AppointmentsProvider } from "./contexts/AppointmentContext.tsx";
 import { BrowserRouter } from "react-router-dom";
+import { UserRoleProvider } from "./contexts/UserRole.tsx";
 
 axios.defaults.baseURL = "http://localhost:8000/";
 
@@ -16,7 +17,9 @@ createRoot(document.getElementById("root")!).render(
       <ThemeProvider>
         <MedicalRecordsProvider>
           <AppointmentsProvider>
-            <App />
+            <UserRoleProvider>
+              <App />
+            </UserRoleProvider>
           </AppointmentsProvider>
         </MedicalRecordsProvider>
       </ThemeProvider>
