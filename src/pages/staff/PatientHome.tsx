@@ -1,123 +1,93 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
 import {
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  Popover,
-  PopoverBackdrop,
-  PopoverButton,
-  PopoverPanel,
-} from "@headlessui/react";
-import {
-  ArrowLongLeftIcon,
-  CheckIcon,
-  HandThumbUpIcon,
-  HomeIcon,
-  MagnifyingGlassIcon,
+  // CheckIcon,
+  // HandThumbUpIcon,
   PaperClipIcon,
-  QuestionMarkCircleIcon,
-  UserIcon,
+  // UserIcon,
 } from "@heroicons/react/20/solid";
-import {
-  Bars3Icon,
-  BellIcon,
-  PlusIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
-import Table from "../../components/Table";
 import { removeUser } from "../../api/Register/RemoveUserApi";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getPatientDetails } from "../../api/User/PatientDetails";
-import { UserResponse } from "../../types/User";
+import { User, UserResponse } from "../../types/User";
 import { calculateAge } from "../../util/AgeCalculator";
-
-const user = {
-  name: "Whitney Francis",
-  email: "whitney@example.com",
-  imageUrl:
-    "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-};
+import { Modal } from "antd";
+import { createUser } from "../../api/Register/SignupApi";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "../../firebase.js";
+// const user = {
+//   name: "Whitney Francis",
+//   email: "whitney@example.com",
+//   imageUrl:
+//     "https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
+// };
 const attachments = [
   { name: "resume_front_end_developer.pdf", href: "#" },
   { name: "coverletter_front_end_developer.pdf", href: "#" },
 ];
-const eventTypes = {
-  applied: { icon: UserIcon, bgColorClass: "bg-gray-400" },
-  advanced: { icon: HandThumbUpIcon, bgColorClass: "bg-blue-500" },
-  completed: { icon: CheckIcon, bgColorClass: "bg-green-500" },
-};
-const timeline = [
-  {
-    id: 1,
-    type: eventTypes.applied,
-    content: "Applied to",
-    target: "Front End Developer",
-    date: "Sep 20",
-    datetime: "2020-09-20",
-  },
-  {
-    id: 2,
-    type: eventTypes.advanced,
-    content: "Advanced to phone screening by",
-    target: "Bethany Blake",
-    date: "Sep 22",
-    datetime: "2020-09-22",
-  },
-  {
-    id: 3,
-    type: eventTypes.completed,
-    content: "Completed phone screening with",
-    target: "Martha Gardner",
-    date: "Sep 28",
-    datetime: "2020-09-28",
-  },
-  {
-    id: 4,
-    type: eventTypes.advanced,
-    content: "Advanced to interview by",
-    target: "Bethany Blake",
-    date: "Sep 30",
-    datetime: "2020-09-30",
-  },
-  {
-    id: 5,
-    type: eventTypes.completed,
-    content: "Completed interview with",
-    target: "Katherine Snyder",
-    date: "Oct 4",
-    datetime: "2020-10-04",
-  },
-];
+// const eventTypes = {
+//   applied: { icon: UserIcon, bgColorClass: "bg-gray-400" },
+//   advanced: { icon: HandThumbUpIcon, bgColorClass: "bg-blue-500" },
+//   completed: { icon: CheckIcon, bgColorClass: "bg-green-500" },
+// };
+// const timeline = [
+//   {
+//     id: 1,
+//     type: eventTypes.applied,
+//     content: "Applied to",
+//     target: "Front End Developer",
+//     date: "Sep 20",
+//     datetime: "2020-09-20",
+//   },
+//   {
+//     id: 2,
+//     type: eventTypes.advanced,
+//     content: "Advanced to phone screening by",
+//     target: "Bethany Blake",
+//     date: "Sep 22",
+//     datetime: "2020-09-22",
+//   },
+//   {
+//     id: 3,
+//     type: eventTypes.completed,
+//     content: "Completed phone screening with",
+//     target: "Martha Gardner",
+//     date: "Sep 28",
+//     datetime: "2020-09-28",
+//   },
+//   {
+//     id: 4,
+//     type: eventTypes.advanced,
+//     content: "Advanced to interview by",
+//     target: "Bethany Blake",
+//     date: "Sep 30",
+//     datetime: "2020-09-30",
+//   },
+//   {
+//     id: 5,
+//     type: eventTypes.completed,
+//     content: "Completed interview with",
+//     target: "Katherine Snyder",
+//     date: "Oct 4",
+//     datetime: "2020-10-04",
+//   },
+// ];
 
-function classNames(...classes: any) {
-  return classes.filter(Boolean).join(" ");
-}
+// function classNames(...classes: any) {
+//   return classes.filter(Boolean).join(" ");
+// }
 
 export default function PatientHome() {
   const { id } = useParams();
   const [userId, setUserId] = useState(id);
-  const [medicalRecordAvailable, setMedicalRecordAvailable] = useState(true);
+  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  // const [medicalRecordAvailable, setMedicalRecordAvailable] = useState(true);
   const [user, setUser] = useState<UserResponse>();
   console.log(id);
 
   const navigate = useNavigate();
   useEffect(() => {
-    id == undefined && setUserId(id);
+    // id == undefined && setUserId(id);
     const fetchUser = async (userId: string) => {
       try {
         const token = document.cookie
@@ -148,7 +118,7 @@ export default function PatientHome() {
       await removeUser(employeeId);
 
       alert("User removed successfully");
-       navigate(`/`)
+      navigate(`/`);
     } catch (error) {
       console.error("Error removing user:", error);
       alert("Failed to remove user. Please try again.");
@@ -204,6 +174,9 @@ export default function PatientHome() {
                 <button
                   type="button"
                   className="inline-flex items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+                  onClick={() => {
+                    setUpdateModalOpen(true);
+                  }}
                 >
                   Update
                 </button>
@@ -410,7 +383,7 @@ export default function PatientHome() {
                         ))}
                       </ul>
                     </div> */}
-                  
+
                     <div className="mt-6 flex flex-col justify-stretch">
                       <button
                         type="button"
@@ -487,6 +460,238 @@ export default function PatientHome() {
           </main>
         )}
       </div>
+      <UpdateProfileModal
+        open={updateModalOpen}
+        data={user}
+        onCancel={() => setUpdateModalOpen(false)}
+      />
     </>
   );
 }
+
+const UpdateProfileModal = ({
+  open,
+  onCancel,
+  data,
+}: {
+  open: boolean;
+  onCancel: () => void;
+  data: UserResponse;
+}) => {
+  const [formData, setFormData] = useState<User>({
+    username: "",
+    email: "",
+    password: "",
+    role: [],
+  });
+  const [image, setImage] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        username: data.username,
+        email: data.email,
+        password: "",
+        role: [],
+      });
+    }
+  }, [data]);
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prevData: User) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleImageChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    if (e.target.files && e.target.files[0]) {
+      setImage(e.target.files[0]); // Set the selected file to state
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      if (image) {
+        const storageRef = ref(storage, `images/${image.name}`); // Reference to where the image will be stored
+
+        // Upload the file
+        const snapshot = await uploadBytes(storageRef, image);
+        console.log("Uploaded a file!", snapshot);
+
+        // Get download URL
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        console.log("File available at", downloadURL);
+      }
+      await createUser(formData);
+      setSuccess(true);
+      setError(null);
+    } catch (err) {
+      setError("Failed to create user. Please try again.");
+      setSuccess(false);
+    }
+  };
+  return (
+    <>
+      <Modal
+        open={open}
+        closable
+        destroyOnClose
+        onOk={handleSubmit}
+        onCancel={onCancel}
+      >
+        <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
+          <div className="sm:mx-auto sm:w-full sm:max-w-md">
+            <img
+              alt="Your Company"
+              src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
+              className="mx-auto h-10 w-auto"
+            />
+            <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+              Update Your Account
+            </h2>
+          </div>
+
+          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+            <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
+              <form className="space-y-6">
+                <div>
+                  <label
+                    htmlFor="username"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Username
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      id="username"
+                      name="username"
+                      type="text"
+                      required
+                      value={formData.username}
+                      onChange={handleInputChange}
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Email address
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      autoComplete="email"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Password
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      required
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      autoComplete="current-password"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Profile Picture
+                  </label>
+                  <div className="mt-2">
+                    <input
+                      id="passwprofilePicord"
+                      name="profilePic"
+                      type="file"
+                      required
+                      onChange={handleImageChange}
+                      autoComplete="current-password"
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    />
+                  </div>
+                </div>
+
+                {/* <div>
+                  <label
+                    htmlFor="role"
+                    className="block text-sm font-medium leading-6 text-gray-900"
+                  >
+                    Role
+                  </label>
+                  <div className="mt-2">
+                    <select
+                      id="role"
+                      name="role"
+                      required
+                      value={formData.role[0] || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, role: [e.target.value] })
+                      }
+                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                    >
+                      <option value="" disabled>
+                        Select a role
+                      </option>
+                      <option value="admin">Staff</option>
+                      <option value="mod">Doctor</option>
+                      <option value="user">Patient</option>
+                    </select>
+                  </div>
+                </div> */}
+
+                {error && <div className="text-red-500">{error}</div>}
+                {success && (
+                  <div className="text-green-500">
+                    User successfully created!
+                  </div>
+                )}
+
+                {/* <div>
+                  <button
+                    type="submit"
+                    className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    Sign up
+                  </button>
+                </div> */}
+              </form>
+            </div>
+          </div>
+        </div>
+      </Modal>
+    </>
+  );
+};
