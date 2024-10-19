@@ -17,7 +17,6 @@ export interface MedicalRecord {
 
 
 interface Treatment {
-
   id: string;
   patientID: string;
   aptNo: string;
