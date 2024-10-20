@@ -28,6 +28,8 @@ import AppointmentDetails from "../../components/Modal/AppointmentDetails.js";
 import TreatmentsTable from "./TreatmentsTable.js";
 import PopUp from "../../components/PopUp.js";
 import MedicalRecordForm from "../../components/Staff/AddMedicalRecord.js";
+import PatientAppointments from "../../components/Appointment/PatientAppointments.tsx";
+import PatientAppointmentDetails from "../../components/Modal/PatientAppointmentDetails.tsx";
 const attachments = [
   { name: "resume_front_end_developer.pdf", href: "#" },
   { name: "coverletter_front_end_developer.pdf", href: "#" },
@@ -99,7 +101,7 @@ export default function PatientHome() {
 
   return (
     <>
-      <AppointmentDetails
+      <PatientAppointmentDetails
         title=""
         open={appointmentDetailsModalOpen}
         setOpen={setAppointmentDetailsModalOpen}
@@ -264,7 +266,7 @@ export default function PatientHome() {
                     aria-labelledby="timeline-title"
                     className="lg:col-span-4 lg:col-start-3"
                   >
-                    <UpcomingAppointments
+                    <PatientAppointments
                       appointments={appointments}
                       onAppointmentClick={openAppointmentDetails}
                     />

@@ -1,11 +1,47 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, User, Stethoscope, FileText, Building } from 'lucide-react';
 import axios from 'axios';
 import { getUserIdFromJwtCookie } from '../../../util/jwtDecode';
+import { User as Doctor } from '../../../types/User';
+import { getAllDoctors } from '../../../api/User/GetDoctors';
 
 console.log("Token", getUserIdFromJwtCookie());
 
 const ScheduleForm = () => {
+
+  const [doctor, setDoctor] = useState<Doctor[]>();
+  const [loading, setLoading] = useState<boolean>(false);
+
+  console.log("Doctor", doctor);
+
+  useEffect(() => {
+    // id == undefined && setUserId(id);
+    const fetchDoctors = async () => {
+      setLoading(true);
+      try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("authToken="))
+          ?.split("=")[1];
+
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+
+        const doctor = await getAllDoctors(token);
+        setDoctor(doctor);
+        setLoading(false);
+        return true;
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setLoading(false);
+      }
+    };
+    
+    fetchDoctors();
+  }, []);
+
   const [appointment, setAppointment] = useState({
     patientID: getUserIdFromJwtCookie()?.id,
     appointmentDate: '',

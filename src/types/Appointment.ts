@@ -1,4 +1,5 @@
 export interface Appointment {
+    id?: string;
     aptNo: string;
     appointmentDate: string;
     patientID: string;

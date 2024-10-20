@@ -1,8 +1,11 @@
 import { Calendar, Clock, Search, ChevronRight } from "lucide-react";
 import { useAppointments } from "../../../hooks/useAppointmentHook";
 import AppointmentDetails from "../../../components/Modal/AppointmentDetails";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UpcomingAppointments from "../../../components/Appointment/UpcomingAppointments";
+import { Appointment } from "../../../types/Appointment";
+import { getUserIdFromJwtCookie } from "../../../util/jwtDecode";
+import { getAppointments } from "../../../api/User/GetAppointments";
 
 const Home = () => {
 
@@ -14,22 +17,42 @@ const Home = () => {
     setAppointmentDetailsModalOpen(true);
   };
 
-  const {
-    appointments,
-  }: {
-    appointments: Array<{
-      id: string;
-      appointmentDate: string;
-      docName: string;
-      department: string;
-    }>;
-    loading: boolean;
-  } = useAppointments();
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const id = getUserIdFromJwtCookie()?.id;
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchUser = async (userId: string) => {
+      setLoading(true);
+      try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("authToken="))
+          ?.split("=")[1];
+
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+
+        const appointments = await getAppointments(userId, token);
+        setAppointments(appointments);
+        setLoading(false);
+        return true;
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setLoading(false);
+      }
+    };
+    if (id) {
+      fetchUser(id);
+    }
+  }, [id]);
 
   // Filter upcoming appointments
-  const upcomingAppointments = appointments.filter(
-    (apt) => new Date(apt.appointmentDate) > new Date()
-  );
+  // const upcomingAppointments = appointments.filter(
+  //   (apt) => new Date(apt.appointmentDate) > new Date()
+  // );
 
   return (
     <main>
@@ -59,7 +82,7 @@ const Home = () => {
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md">
               <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   className="flex flex-col items-center justify-center p-4 bg-teal-200 rounded-lg transition-colors hover:bg-teal-300"
                   onClick={() =>
@@ -80,10 +103,10 @@ const Home = () => {
                   <Clock size={32} className="text-teal-600 mb-2" />
                   <span className="text-sm font-medium">View Appointments</span>
                 </button>
-                <button className="flex flex-col items-center justify-center p-4 bg-teal-200 rounded-lg transition-colors hover:bg-teal-300">
+                {/* <button className="flex flex-col items-center justify-center p-4 bg-teal-200 rounded-lg transition-colors hover:bg-teal-300">
                   <Search size={32} className="text-teal-600 mb-2" />
                   <span className="text-sm font-medium">Find Doctor</span>
-                </button>
+                </button> */}
               </div>
             </div>
 

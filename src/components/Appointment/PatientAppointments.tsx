@@ -6,20 +6,17 @@ interface UpcomingAppointmentsProps {
   onAppointmentClick: (appointment: Appointment) => void;
 }
 
-const UpcomingAppointments = ({
+const PatientAppointments = ({
   appointments,
   onAppointmentClick,
 }: UpcomingAppointmentsProps) => {
-  const upcomingAppointments = appointments.filter(
-    (apt) => new Date(apt.appointmentDate) > new Date()
-  );
-
+  
   return (
     <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md">
-      <h2 className="text-xl font-semibold mb-4">Upcoming Appointments</h2>
+      <h2 className="text-xl font-semibold mb-4">Patient Appointments</h2>
       <div className="space-y-4">
-        {upcomingAppointments.length > 0 ? (
-          upcomingAppointments.map((appointment) => (
+        {appointments.length > 0 ? (
+          appointments.map((appointment) => (
             <div
               key={appointment.id}
               className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-teal-50 p-4 rounded-lg hover:cursor-pointer"
@@ -65,4 +62,4 @@ const UpcomingAppointments = ({
   );
 };
 
-export default UpcomingAppointments;
+export default PatientAppointments;

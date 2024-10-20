@@ -32,6 +32,7 @@ import {
   ShieldCheckIcon,
 } from "@heroicons/react/20/solid";
 import { useLocation, useNavigate } from "react-router-dom";
+import { getUserIdFromJwtCookie } from "../util/jwtDecode";
 
 const initialNavigation = [
   { name: "Home", href: "/patient/home/", icon: HomeIcon, current: false },
@@ -59,6 +60,7 @@ export default function PatientSideBar({
   const [navigation, setNavigation] = useState(initialNavigation);
   const navigate = useNavigate();
   const location = useLocation();
+  const userName = getUserIdFromJwtCookie()?.sub;
 
   React.useEffect(() => {
     setNavigation(prevNav =>
@@ -296,12 +298,12 @@ export default function PatientSideBar({
                       <span className="absolute -inset-1.5 lg:hidden" />
                       <img
                         alt=""
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
                         className="h-8 w-8 rounded-full"
                       />
                       <span className="ml-3 hidden text-sm font-medium text-gray-700 lg:block">
                         <span className="sr-only">Open user menu for </span>
-                        Emilia Birch
+                        {userName}
                       </span>
                       <ChevronDownIcon
                         aria-hidden="true"
@@ -313,7 +315,7 @@ export default function PatientSideBar({
                     transition
                     className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                   >
-                    <MenuItem>
+                    {/* <MenuItem>
                       <a
                         href="#"
                         className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
@@ -328,7 +330,7 @@ export default function PatientSideBar({
                       >
                         Settings
                       </a>
-                    </MenuItem>
+                    </MenuItem> */}
                     <MenuItem>
                       <div
                         className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 cursor-pointer"

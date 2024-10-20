@@ -7,16 +7,16 @@ const PatientHomePage = () => {
       {/* Hero Section */}
       <header className="bg-gradient-to-r from-teal-600 to-teal-800 text-white">
         <div className="container mx-auto px-6 py-20 sm:py-28 lg:flex lg:items-center lg:justify-between">
-          <div className="lg:w-1/2 space-y-6">
+          <div className="space-y-6">
             <h1 className="text-4xl font-extrabold mb-4 sm:text-5xl lg:text-6xl leading-tight">Welcome to HealthCare</h1>
             <p className="text-xl mb-8 text-teal-100">Your health is our priority. Manage your care with ease.</p>
             <button className="bg-white text-teal-800 font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-teal-100 transition duration-300">
               Get Started
             </button>
           </div>
-          <div className="mt-12 lg:mt-0 lg:w-5/12">
+          {/* <div className="mt-12 lg:mt-0 lg:w-5/12">
             <img src="https://img.freepik.com/free-photo/medical-nurse-attaching-oxymeter-senior-woman-patient_482257-6434.jpg?t=st=1729369806~exp=1729373406~hmac=d857cb4c7e9c44091ce79f8e26d794d0bc785ed6fedaf35b7bdffb7d8e0b7377&w=1060" alt="Doctor with patient" className="rounded-lg shadow-2xl object-cover w-full h-auto" />
-          </div>
+          </div> */}
         </div>
       </header>
 
