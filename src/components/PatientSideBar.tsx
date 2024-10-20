@@ -1,7 +1,7 @@
 // components/Layout.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogBackdrop,
@@ -33,6 +33,8 @@ import {
 } from "@heroicons/react/20/solid";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getUserIdFromJwtCookie } from "../util/jwtDecode";
+import { getPatientDetails } from "../api/User/PatientDetails";
+import { UserResponse } from "../types/User";
 
 const initialNavigation = [
   { name: "Home", href: "/patient/home/", icon: HomeIcon, current: false },
@@ -61,6 +63,38 @@ export default function PatientSideBar({
   const navigate = useNavigate();
   const location = useLocation();
   const userName = getUserIdFromJwtCookie()?.sub;
+  const id = getUserIdFromJwtCookie()?.id;
+  const [loading, setLoading] = useState<boolean>(false);
+  const [user, setUser] = useState<UserResponse>();
+
+  useEffect(() => {
+    // id == undefined && setUserId(id);
+    const fetchUser = async (userId: string) => {
+      setLoading(true);
+      try {
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("authToken="))
+          ?.split("=")[1];
+
+        if (!token) {
+          console.error("No token found");
+          return;
+        }
+
+        const user = await getPatientDetails(userId, token);
+        setUser(user);
+        setLoading(false);
+        return true;
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        setLoading(false);
+      }
+    };
+    if (id) {
+      fetchUser(id);
+    }
+  }, [id]);
 
   React.useEffect(() => {
     setNavigation(prevNav =>
@@ -296,11 +330,19 @@ export default function PatientSideBar({
                   <div>
                     <MenuButton className="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 lg:rounded-md lg:p-2 lg:hover:bg-gray-50">
                       <span className="absolute -inset-1.5 lg:hidden" />
-                      <img
-                        alt=""
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
-                        className="h-8 w-8 rounded-full"
-                      />
+                      {user?.link ? (
+                        <img
+                          alt=""
+                          src={user.link}
+                          className="h-8 w-8 rounded-full"
+                        />
+                      ) : (
+                        <img
+                          alt=""
+                          src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Default_pfp.svg/2048px-Default_pfp.svg.png"
+                          className="h-8 w-8 rounded-full"
+                        />
+                      )}
                       <span className="ml-3 hidden text-sm font-medium text-gray-700 lg:block">
                         <span className="sr-only">Open user menu for </span>
                         {userName}
