@@ -29,6 +29,7 @@ import { DataType } from "../../components/Staff/RecordsTable.tsx";
 import PatientAppointments from "../../components/Appointment/PatientAppointments.tsx";
 import ViewRecord from "./ViewRecord.tsx";
 import AppointmentDetails from "../../components/Modal/AppointmentDetails.tsx";
+import PatientAppointmentDetails from "../../components/Modal/PatientAppointmentDetails.tsx";
 
 export default function PatientHome() {
   const { id } = useParams();
@@ -46,12 +47,12 @@ export default function PatientHome() {
   const [isViewingRecord, setIsViewingRecord] = useState(false);
 
   const handleBackToView = () => {
-    setIsViewingRecord(false)
+    setIsViewingRecord(false);
   };
 
   const handleViewRecord = () => {
-    setIsViewingRecord(true)
-  }
+    setIsViewingRecord(true);
+  };
   const [appointmentOpen, setAppointmentOpen] = useState(false);
 
   const openAppointmentDetails = (appointment: any) => {
@@ -108,10 +109,11 @@ export default function PatientHome() {
     }
   };
 
-
-  const mapMedicalRecordToDataType = (medicalRecord: MedicalRecord): DataType => ({
+  const mapMedicalRecordToDataType = (
+    medicalRecord: MedicalRecord
+  ): DataType => ({
     key: medicalRecord.id || null,
-    id: medicalRecord.id || '',
+    id: medicalRecord.id || "",
     userId: medicalRecord.userId || '',
     patientId: medicalRecord.patientId,
     firstName: medicalRecord.firstName,
@@ -136,16 +138,15 @@ export default function PatientHome() {
     );
   }
 
-
   return (
     <>
       <Toaster position="top-right" reverseOrder={false} />
-      <AppointmentDetails
+      <PatientAppointmentDetails
         title=""
         open={appointmentDetailsModalOpen}
         setOpen={setAppointmentDetailsModalOpen}
         appointment={selectedAppointment}
-        onUpdate={() => { }}
+        onUpdate={() => {}}
       />
       <PopUp
         isOpen={isOpened}
