@@ -18,7 +18,7 @@ import { calculateAge } from "../../util/AgeCalculator";
 import { Modal } from "antd";
 import { createUser } from "../../api/Register/SignupApi";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { storage } from "../../firebase.js";
+import { storage } from "../../firebase.ts";
 import { updateUser } from "../../api/Register/UpdateUserApi.js";
 import AllergiesList from "../../components/AllergyList.js";
 import UpcomingAppointments, {

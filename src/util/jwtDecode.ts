@@ -1,5 +1,3 @@
-// utils/jwtUtils.ts
-import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { getAuthToken } from "../api/Register/LoginApi";
 
