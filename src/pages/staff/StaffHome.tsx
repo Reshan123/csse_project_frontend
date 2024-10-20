@@ -284,7 +284,7 @@ const StaffHome = () => {
                 users.map((user) => (
                   <li key={user.id}>
                     <a
-                      href={`staff/home/${user.id}`}
+                      href={`/home/${user.id}`}
                       className="block bg-white px-4 py-4 hover:bg-gray-50"
                     >
                       <span className="flex items-center space-x-4">

@@ -4,7 +4,11 @@ import {
   PaperClipIcon,
   // UserIcon,
 } from "@heroicons/react/20/solid";
-import { BanknotesIcon, ChevronRightIcon, PlusIcon } from "@heroicons/react/24/outline";
+import {
+  BanknotesIcon,
+  ChevronRightIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { removeUser } from "../../api/Register/RemoveUserApi";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,6 +27,8 @@ import UpcomingAppointments, {
 import { getAppointments } from "../../api/User/GetAppointments.js";
 import AppointmentDetails from "../../components/Modal/AppointmentDetails.js";
 import TreatmentsTable from "./TreatmentsTable.js";
+import PopUp from "../../components/PopUp.js";
+import MedicalRecordForm from "./AddMedicalRecord.js";
 const attachments = [
   { name: "resume_front_end_developer.pdf", href: "#" },
   { name: "coverletter_front_end_developer.pdf", href: "#" },
@@ -33,7 +39,7 @@ export default function PatientHome() {
   const [userId, setUserId] = useState(id);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [appointments, setAppointments] = useState<any>([]);
-  // const [medicalRecordAvailable, setMedicalRecordAvailable] = useState(true);
+  const [isOpened, setIsOpened] = useState(false);
   const [user, setUser] = useState<UserResponse>();
   console.log(id);
   const [appointmentDetailsModalOpen, setAppointmentDetailsModalOpen] =
@@ -64,6 +70,7 @@ export default function PatientHome() {
 
         const user = await getPatientDetails(userId, token);
         const appointments = await getAppointments(userId, token);
+        setUserId(userId);
         setUser(user);
         setAppointments(appointments);
         setLoading(false);
@@ -93,14 +100,6 @@ export default function PatientHome() {
 
   return (
     <>
-      {/*
-        This example requires updating your template:
-
-        ```
-        <html class="h-full bg-gray-100">
-        <body class="h-full">
-        ```
-      */}
       <AppointmentDetails
         title=""
         open={appointmentDetailsModalOpen}
@@ -108,10 +107,10 @@ export default function PatientHome() {
         appointment={selectedAppointment}
         onUpdate={() => {}}
       />
+      <PopUp isOpen={isOpened} setIsOpen={setIsOpened} children={<MedicalRecordForm userId={userId}></MedicalRecordForm>} />
       <div className="min-h-full">
         {userId ? (
           <main className="py-10">
-            {/* Page header */}
             <div className="mx-auto max-w-3xl px-4 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8">
               <div className="flex items-center space-x-5">
                 <div className="flex-shrink-0">
@@ -156,11 +155,10 @@ export default function PatientHome() {
               </div>
             </div>
 
-            {user?.medicalrecord ? (
+            {!user?.medicalrecord ? (
               <div>
                 <div className="mx-auto mt-8 grid max-w-3xl grid-cols-1 gap-6 sm:px-6 lg:max-w-7xl lg:grid-flow-col-dense lg:grid-cols-3">
                   <div className="space-y-6 lg:col-span-2 lg:col-start-1">
-                    {/* Description list*/}
                     <section aria-labelledby="applicant-information-title">
                       <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md">
                         <div className="px-4 py-5 sm:px-6">
@@ -262,7 +260,7 @@ export default function PatientHome() {
                   </section>
                 </div>
 
-                {/* Activity list (smallest breakpoint only) */}
+                {/* list (smallest breakpoint only) */}
                 <div className="shadow sm:hidden ">
                   <h2 className="text-xl font-medium leading-6 text-gray-900 px-5 pt-10 pb-3">
                     Treatment Details
@@ -306,7 +304,7 @@ export default function PatientHome() {
                   </ul>
                 </div>
 
-                {/* Activity table (small breakpoint and up) */}
+                {/* table (small breakpoint and up) */}
                 <div className="hidden sm:block mt-6 ">
                   <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-6">
                     <div className="mt-2 flex flex-col">
@@ -347,6 +345,7 @@ export default function PatientHome() {
                   <div className="mt-6">
                     <button
                       type="button"
+                      onClick={() => setIsOpened(true)}
                       className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                     >
                       <PlusIcon
