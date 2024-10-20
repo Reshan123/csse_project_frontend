@@ -44,12 +44,12 @@ const navigation = [
   //   icon: ClockIcon,
   //   current: false,
   // },
-  {
-    name: "Add Medical Records",
-    href: "/staff/addRecord",
-    icon: PlusCircleIcon,
-    current: false,
-  },
+  // {
+  //   name: "Add Medical Records",
+  //   href: "/staff/addRecord",
+  //   icon: PlusCircleIcon,
+  //   current: false,
+  // },
   {
     name: "View Medical Records",
     href: "/staff/viewRecords",
@@ -82,7 +82,7 @@ export default function StaffSideBar({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
-  const { setRole } = useUserRole()  
+  const { setRole } = useUserRole()
   const user = getUserIdFromJwtCookie();
 
   return (

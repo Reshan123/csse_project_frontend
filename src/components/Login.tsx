@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { getAuthToken, getRole, loginUser } from "../api/Register/LoginApi";
 import { useNavigate } from "react-router-dom";
 import { useUserRole } from "../hooks/useUserRoleHook";
+import logo from "../assets/logo.png"
 
 export default function Login() {
   const [username, setUsername] = useState("");
@@ -62,7 +63,7 @@ export default function Login() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <img
           alt="Your Company"
-          src="../src/assets/logo.png"
+          src={logo}
           className="mx-auto h-20 w-auto"
         />
         <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">

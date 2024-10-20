@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { User } from "../types/User";
 import { createUser } from "../api/Register/SignupApi";
-
+import logo from "../assets/logo.png"
 
 export default function Signup() {
   const [formData, setFormData] = useState<User>({
@@ -17,7 +17,7 @@ export default function Signup() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prevData:User) => ({
+    setFormData((prevData: User) => ({
       ...prevData,
       [name]: value,
     }));
@@ -41,7 +41,7 @@ export default function Signup() {
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           <img
             alt="Your Company"
-            src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
+            src={logo}
             className="mx-auto h-10 w-auto"
           />
           <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">

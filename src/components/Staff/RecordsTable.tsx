@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Table, Button } from "antd";
+import { Table, Button, Input } from "antd";
 import type { TableColumnsType } from "antd";
 import ViewRecord from "../../pages/staff/ViewRecord";
 import { useMedicalRecords } from "../../hooks/useMedicalRecordsHook";
 
 export interface DataType {
-  key: string|null;
+  key: string | null;
   id: string;
   userId: string;
   patientId: string;
@@ -16,7 +16,7 @@ export interface DataType {
   contactNumber: string;
   address?: string;
   allergies?: string[];
-  treatments?: string[]
+  treatments?: string[];
   ongoingMedications?: string[];
   emergencyContactName?: string;
   emergencyContactNumber?: string;
@@ -25,6 +25,7 @@ export interface DataType {
 const RecordsTable: React.FC = () => {
   const { data, loading, deleteMedicalRecord } = useMedicalRecords();
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   const handleViewClick = (record: DataType) => {
     setSelectedRecord(record);
@@ -34,17 +35,19 @@ const RecordsTable: React.FC = () => {
     setSelectedRecord(null);
   };
 
-
-
   const handleDeleteClick = async (record: DataType) => {
     deleteMedicalRecord(record);
   };
 
-
-  const formattedData = data?.map(record => ({
+  const formattedData = data?.map((record) => ({
     ...record,
-    dateOfBirth: record.dateOfBirth.split('T')[0]
+    dateOfBirth: record.dateOfBirth.split("T")[0],
   })) || [];
+
+  // Filtered data based on the search term
+  const filteredData = formattedData.filter((record) =>
+    record.patientId.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const columns: TableColumnsType<DataType> = [
     {
@@ -105,17 +108,24 @@ const RecordsTable: React.FC = () => {
 
   // Inline styles for the table
   const tableHeaderStyle = {
-    backgroundColor: '#0f766e',
-    color: 'white',
+    backgroundColor: "#0f766e",
+    color: "white",
   };
 
   return selectedRecord ? (
     <ViewRecord record={selectedRecord} onBack={handleBack} />
   ) : (
-    <div style={{ backgroundColor: '#0b4541', padding: '16px' }}>
+    <div style={{ backgroundColor: "#0b4541", padding: "16px" }}>
+      {/* Search Bar */}
+      <Input
+        placeholder="Search by Patient ID"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={{ marginBottom: "16px" }}
+      />
       <Table<DataType>
         columns={columns}
-        dataSource={formattedData}
+        dataSource={filteredData} // Use filtered data
         loading={loading}
         pagination={{ pageSize: 5 }}
         rowKey="id" // Use 'id' as the rowKey
@@ -127,7 +137,6 @@ const RecordsTable: React.FC = () => {
           },
         }}
       />
-
     </div>
   );
 };

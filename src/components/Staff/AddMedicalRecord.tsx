@@ -7,7 +7,7 @@ interface MedicalFormProps {
   userId?: string;
 }
 
-const MedicalRecordForm: React.FC<MedicalFormProps> = ({userId}) => {
+const MedicalRecordForm: React.FC<MedicalFormProps> = ({ userId }) => {
   const { addMedicalRecord, data } = useMedicalRecords();
 
   const [formData, setFormData] = useState<MedicalRecord>({
@@ -102,7 +102,7 @@ const MedicalRecordForm: React.FC<MedicalFormProps> = ({userId}) => {
     e.preventDefault();
 
     if (!validateForm()) {
-      toast.error("Please correct the errors in the form");
+      toast.error("Please correct the errors in the form", {id: "eioghlwefhwelifh"});
       return;
     }
 
@@ -116,9 +116,7 @@ const MedicalRecordForm: React.FC<MedicalFormProps> = ({userId}) => {
     if (addMedicalRecord) {
       try {
         await addMedicalRecord(dataToSubmit);
-        toast.success("Medical record submitted successfully!");
-        // Optionally, reset the form here
-        // setFormData({ ... }); // Reset to initial state
+        toast.success("Medical record submitted successfully!", { id: "odfjeolhfeohf" });
       } catch (error) {
         toast.error("Failed to submit medical record. Please try again.");
       }
