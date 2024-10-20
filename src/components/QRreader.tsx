@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import toast, { Toaster } from "react-hot-toast"; // Import react-hot-toast
 
 // Styles
 import "./QrStyles.css";
@@ -12,14 +13,21 @@ import { PlusIcon, QrCodeIcon } from "@heroicons/react/24/outline";
 import { validateUser } from "../api/Register/ValidateApi";
 
 const QrReader = () => {
-  const navigate = useNavigate(); // Initialize navigate for navigation
+  const navigate = useNavigate();
   const scanner = useRef<QrScanner>();
   const videoEl = useRef<HTMLVideoElement>(null);
   const qrBoxEl = useRef<HTMLDivElement>(null);
-  const [qrOn, setQrOn] = useState<boolean>(false); // Start with QR scanner off
+  const [qrOn, setQrOn] = useState<boolean>(false);
   const [scannedResult, setScannedResult] = useState<string | undefined>("");
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
 
   const onScanSuccess = async (result: QrScanner.ScanResult) => {
+    // Clear timeout if QR is found
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
+
     console.log(result);
     setScannedResult(result?.data);
 
@@ -28,15 +36,25 @@ const QrReader = () => {
       try {
         const validationResponse = await validateUser(result.data);
         if (validationResponse.valid) {
-          navigate(`staff/home/${result.data}`); 
+          toast.success("User validated successfully! Navigating to home.", {
+            id: "user-validated-toast", // Unique id for successful validation
+          });
+          navigate(`home/${result.data}`);
         } else {
-          alert("Invalid User ID. Please try again.");
+          toast.error("Invalid User ID. Please try again.", {
+            id: "invalid-user-toast", // Unique id for invalid user
+            duration: 5000, // Duration to auto-dismiss
+          });
         }
       } catch (error) {
-        alert(
+        toast.error(
           error instanceof Error
             ? error.message
-            : "An error occurred during validation."
+            : "An error occurred during validation.",
+          {
+            id: "validation-error-toast", // Unique id for validation error
+            duration: 5000,
+          }
         );
       }
     }
@@ -57,18 +75,42 @@ const QrReader = () => {
         overlay: qrBoxEl.current || undefined,
       });
 
-      scanner.current.start().catch((err) => {
-        console.error(err);
-        setQrOn(false);
-      });
+      scanner.current
+        .start()
+        .then(() => {
+          toast.success("QR scanner started. Point at a QR code to scan.", {
+            id: "qr-started-toast", // Unique id for QR scanner start
+          });
+
+          const id = setTimeout(() => {
+            toast.error("No QR code found. Please try again.", {
+              id: "no-qr-found-toast", // Unique id for no QR found
+              duration: 5000,
+            });
+            handleCancelClick(); // Stop the scanner if no QR is found
+          }, 30000); 
+
+          setTimeoutId(id);
+        })
+        .catch((err) => {
+          console.error(err);
+          toast.error("Failed to start the QR scanner.", {
+            id: "qr-failed-toast", // Unique id for QR scanner failure
+          });
+          setQrOn(false);
+        });
     }
 
-    // Cleanup the scanner on unmount or when qrOn is false
+    // Cleanup the scanner and timeout on unmount or when qrOn is false
     return () => {
       if (scanner.current) {
         scanner.current.stop();
-        scanner.current.destroy(); // Optional: Release resources
+        scanner.current.destroy(); // Release resources
         scanner.current = undefined; // Reset scanner instance
+      }
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        setTimeoutId(null);
       }
     };
   }, [qrOn]);
@@ -81,11 +123,21 @@ const QrReader = () => {
     setQrOn(false); // Stop the QR scanner
     if (scanner.current) {
       scanner.current.stop(); // Ensure scanner stops
+      toast.error("QR scanner stopped.", {
+        id: "qr-stopped-toast", // Unique id for stopping the scanner
+      });
+    }
+    if (timeoutId) {
+      clearTimeout(timeoutId); // Clear timeout if the scanner is manually stopped
+      setTimeoutId(null);
     }
   };
 
   return (
     <div className="text-center">
+      {/* React Hot Toast container */}
+      <Toaster position="top-right" />
+
       {!qrOn && ( // Render elements only if not in scan mode
         <>
           <div className="flex-shrink-0">

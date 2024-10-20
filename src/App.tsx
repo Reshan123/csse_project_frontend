@@ -19,18 +19,19 @@ function App() {
   const navigate = useNavigate();
   const { role } = useUserRole();
 
-  useEffect(() => {
-    const token = getAuthToken();
-    if (token == null) {
-      navigate("/login");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   const token = getAuthToken();
+  //   if (token == null) {
+  //     navigate("/login");
+  //   }
+  // }, [navigate]);
 
   // if (loading) {
   //   return <Loader />;
   // }
 
   return (
+
     <Routes>
       {/* <Route element={role == "ROLE_USER" ? <Outlet /> : null}>
         <Route
@@ -43,6 +44,7 @@ function App() {
         />
       </Route> */}
 
+      <Route path="/login" element={<Login />} />
       <Route
         element={
           role == "ROLE_USER" ? <Outlet /> : <Navigate to="/unauthorized" />

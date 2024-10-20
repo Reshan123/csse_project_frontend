@@ -32,6 +32,8 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
+import { getUserIdFromJwtCookie } from "../util/jwtDecode";
+import { LogOutIcon } from "lucide-react";
 
 const navigation = [
   { name: "Home", href: "/staff", icon: HomeIcon, current: true },
@@ -79,6 +81,7 @@ export default function StaffSideBar({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const user = getUserIdFromJwtCookie();
 
   return (
     <>
@@ -114,12 +117,15 @@ export default function StaffSideBar({
                   </button>
                 </div>
               </TransitionChild>
-              <div className="flex flex-shrink-0 items-center px-4">
+              <div className="flex flex-col flex-shrink-0 items-center justify-center px-4">
                 <img
                   alt="Easywire logo"
-                  src="https://tailwindui.com/plus/img/logos/mark.svg?color=cyan&shade=300"
+                  src="../src/assets/logo.png"
                   className="h-8 w-auto"
                 />
+                <h1 className="text-teal-200 font-bold">
+                  Hospital Managment System
+                </h1>
               </div>
               <nav
                 aria-label="Sidebar"
@@ -174,12 +180,15 @@ export default function StaffSideBar({
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
           <div className="flex flex-grow flex-col overflow-y-auto bg-teal-700 pb-4 pt-5">
-            <div className="flex flex-shrink-0 items-center px-4">
+            <div className="flex flex-col flex-shrink-0 items-center justify-center px-4">
               <img
                 alt="Easywire logo"
-                src="https://tailwindui.com/plus/img/logos/mark.svg?color=cyan&shade=300"
-                className="h-8 w-auto"
+                src="../src/assets/logo.png"
+                className="h-16 w-auto"
               />
+              <h1 className="text-teal-200 font-bold">
+                Hospital Managment System
+              </h1>
             </div>
             <nav
               aria-label="Sidebar"
@@ -208,19 +217,26 @@ export default function StaffSideBar({
               </div>
               <div className="mt-6 pt-6">
                 <div className="space-y-1 px-2">
-                  {secondaryNavigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      className="group flex items-center rounded-md px-2 py-2 text-sm font-medium leading-6 text-teal-100 hover:bg-teal-600 hover:text-white"
-                    >
-                      <item.icon
-                        aria-hidden="true"
-                        className="mr-4 h-6 w-6 text-teal-200"
-                      />
-                      {item.name}
-                    </a>
-                  ))}
+                  <div
+                    className="block px-4 py-2 text-sm text-cyan-200 data-[focus]:bg-gray-100 cursor-pointer flex font-bold"
+                    onClick={() => {
+                      document.cookie.split(";").forEach(function (c) {
+                        document.cookie = c
+                          .replace(/^ +/, "")
+                          .replace(
+                            /=.*/,
+                            "=;expires=" + new Date().toUTCString() + ";path=/"
+                          );
+                      });
+                      navigate("/login");
+                    }}
+                  >
+                    <LogOutIcon
+                      aria-hidden="true"
+                      className="mr-4 h-6 w-6 flex-shrink-0 text-cyan-200"
+                    />
+                    Logout
+                  </div>
                 </div>
               </div>
             </nav>
@@ -238,55 +254,16 @@ export default function StaffSideBar({
               <Bars3CenterLeftIcon aria-hidden="true" className="h-6 w-6" />
             </button>
             {/* Search bar */}
-            <div className="flex flex-1 justify-between px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8 lg:mt-3">
-              <div className="flex flex-1">
-                <form action="#" method="GET" className="flex w-full md:ml-0">
-                  <label htmlFor="search-field" className="sr-only">
-                    Search
-                  </label>
-                  <div className="relative w-full text-gray-400 focus-within:text-gray-600">
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-y-0 left-0 flex items-center"
-                    >
-                      <MagnifyingGlassIcon
-                        aria-hidden="true"
-                        className="h-5 w-5"
-                      />
-                    </div>
-                    <input
-                      id="search-field"
-                      name="search-field"
-                      type="search"
-                      placeholder="Search "
-                      className="block h-full w-full border-transparent py-2 pl-8 pr-3 text-gray-900 focus:border-transparent focus:outline-none focus:ring-0 sm:text-sm"
-                    />
-                  </div>
-                </form>
-              </div>
+            <div className="flex flex-1 justify-end px-4 sm:px-6 lg:mx-auto lg:max-w-6xl lg:px-8 lg:mt-3">
               <div className="ml-4 flex items-center md:ml-6">
-                <button
-                  type="button"
-                  className="relative rounded-full bg-white p-1 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                >
-                  <span className="absolute -inset-1.5" />
-                  <span className="sr-only">View notifications</span>
-                  <BellIcon aria-hidden="true" className="h-6 w-6" />
-                </button>
-
                 {/* Profile dropdown */}
                 <Menu as="div" className="relative ml-3">
                   <div>
                     <MenuButton className="relative flex max-w-xs items-center rounded-full bg-white text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 lg:rounded-md lg:p-2 lg:hover:bg-gray-50">
                       <span className="absolute -inset-1.5 lg:hidden" />
-                      <img
-                        alt=""
-                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        className="h-8 w-8 rounded-full"
-                      />
                       <span className="ml-3 hidden text-sm font-medium text-gray-700 lg:block">
                         <span className="sr-only">Open user menu for </span>
-                        Emilia Birch
+                        {user?.sub}
                       </span>
                       <ChevronDownIcon
                         aria-hidden="true"
@@ -298,22 +275,6 @@ export default function StaffSideBar({
                     transition
                     className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
                   >
-                    <MenuItem>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
-                      >
-                        Your Profile
-                      </a>
-                    </MenuItem>
-                    <MenuItem>
-                      <a
-                        href="#"
-                        className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100"
-                      >
-                        Settings
-                      </a>
-                    </MenuItem>
                     <MenuItem>
                       <div
                         className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 cursor-pointer"

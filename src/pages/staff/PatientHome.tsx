@@ -13,22 +13,21 @@ import { Modal } from "antd";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase.ts";
 import { updateUser } from "../../api/Register/UpdateUserApi.js";
-import UpcomingAppointments, {
-} from "../../components/Appointment/UpcomingAppointments.js";
+import AllergiesList from "../../components/AllergyList.js";
+import UpcomingAppointments from "../../components/Appointment/UpcomingAppointments.js";
 import { getAppointments } from "../../api/User/GetAppointments.js";
 import AppointmentDetails from "../../components/Modal/AppointmentDetails.js";
 import TreatmentsTable from "./TreatmentsTable.js";
 import PopUp from "../../components/PopUp.js";
 import MedicalRecordForm from "../../components/Staff/AddMedicalRecord.js";
-import ViewRecord from "./ViewRecord.tsx";
-import { DataType } from "../../components/Staff/RecordsTable.tsx";
+import { HospitalIcon } from "lucide-react";
+import DownloadPdf from "../../components/PrintRecords/DownloadPdf.tsx";
+import ScheduleAppointment from "./ScheduleAppointment.tsx";
+import toast, { Toaster } from "react-hot-toast";
 import { MedicalRecord } from "../../types/MedicalRecord.ts";
+import { DataType } from "../../components/Staff/RecordsTable.tsx";
 import PatientAppointments from "../../components/Appointment/PatientAppointments.tsx";
-import PatientAppointmentDetails from "../../components/Modal/PatientAppointmentDetails.tsx";
-const attachments = [
-  { name: "resume_front_end_developer.pdf", href: "#" },
-  { name: "coverletter_front_end_developer.pdf", href: "#" },
-];
+import ViewRecord from "./ViewRecord.tsx";
 
 export default function PatientHome() {
   const { id } = useParams();
@@ -52,6 +51,7 @@ export default function PatientHome() {
   const handleViewRecord = () => {
     setIsViewingRecord(true)
   }
+  const [appointmentOpen, setAppointmentOpen] = useState(false);
 
   const openAppointmentDetails = (appointment: any) => {
     setSelectedAppointment(appointment);
@@ -60,7 +60,6 @@ export default function PatientHome() {
 
   const navigate = useNavigate();
   useEffect(() => {
-    // id == undefined && setUserId(id);
     const fetchUser = async (userId: string) => {
       setLoading(true);
       try {
@@ -93,14 +92,18 @@ export default function PatientHome() {
 
   const handleRemove = async (employeeId: string) => {
     try {
-      // Call the async function to remove the user
       await removeUser(employeeId);
-
-      alert("User removed successfully");
-      navigate(`/`);
+      toast.success("Patient removed successfully.", {
+        id: "invalid-user-toast",
+        duration: 5000,
+      });
+      navigate(`/staff`);
     } catch (error) {
       console.error("Error removing user:", error);
-      alert("Failed to remove user. Please try again.");
+      toast.error("Failed to remove user. Please try again.", {
+        id: "invalid-user-toast",
+        duration: 5000,
+      });
     }
   };
 
@@ -133,7 +136,8 @@ export default function PatientHome() {
 
   return (
     <>
-      <PatientAppointmentDetails
+      <Toaster position="top-right" reverseOrder={false} />
+      <AppointmentDetails
         title=""
         open={appointmentDetailsModalOpen}
         setOpen={setAppointmentDetailsModalOpen}
@@ -208,6 +212,8 @@ export default function PatientHome() {
                           <p className="mt-1 max-w-2xl text-sm text-gray-500">
                             Patient's medical details and information.
                           </p>
+
+                          <DownloadPdf data={user}></DownloadPdf>
                         </div>
                         <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
                           <dl className="grid grid-cols-2 gap-x-2 gap-y-8 sm:grid-cols-2 lg:sm:grid-cols-2">
@@ -273,12 +279,31 @@ export default function PatientHome() {
                                 {user?.medicalrecord?.address}
                               </dd>
                             </div>
-                            <div className="sm:col-span-1">
+                            <div className="sm:col-span-2">
                               <dt className="text-sm font-medium text-gray-500">
                                 Phone
                               </dt>
                               <dd className="mt-1 text-sm text-gray-900">
                                 {user?.medicalrecord?.contactNumber}
+                              </dd>
+                            </div>
+                            <div className="sm:col-span-1">
+                              <dd className="mt-1 text-sm text-gray-900">
+                                <AllergiesList
+                                  list={user?.medicalrecord?.allergies || []}
+                                  name="Allergies"
+                                />
+                              </dd>
+                            </div>
+                            <div className="sm:col-span-1">
+                              <dd className="mt-1 text-sm text-gray-900">
+                                <AllergiesList
+                                  name="On-going Medications"
+                                  list={
+                                    user?.medicalrecord?.ongoingMedications ||
+                                    []
+                                  }
+                                />
                               </dd>
                             </div>
                           </dl>
@@ -304,6 +329,11 @@ export default function PatientHome() {
                       appointments={appointments}
                       onAppointmentClick={openAppointmentDetails}
                     />
+
+                    <ScheduleAppointment
+                      userId={userId}
+                      username={user?.username}
+                    ></ScheduleAppointment>
                   </section>
                 </div>
 
@@ -325,7 +355,7 @@ export default function PatientHome() {
                           >
                             <span className="flex items-center space-x-4">
                               <span className="flex flex-1 space-x-2 truncate">
-                                <BanknotesIcon
+                                <HospitalIcon
                                   aria-hidden="true"
                                   className="h-5 w-5 flex-shrink-0 text-gray-400"
                                 />
@@ -351,7 +381,6 @@ export default function PatientHome() {
                   </ul>
                 </div>
 
-                {/* table (small breakpoint and up) */}
                 <div className="hidden sm:block mt-6 ">
                   <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-6">
                     <div className="mt-2 flex flex-col">
@@ -455,8 +484,6 @@ const UpdateProfileModal: React.FC<{
     link: "",
   });
   const [image, setImage] = useState<File | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
   const [userId, setUserId] = useState(data.id);
 
   useEffect(() => {
@@ -464,7 +491,7 @@ const UpdateProfileModal: React.FC<{
       setFormData({
         username: data.username,
         email: data.email,
-        password: "testpassoworderror",
+        password: "testpassworderror",
         role: ["user"],
         link: data.link,
       });
@@ -488,6 +515,8 @@ const UpdateProfileModal: React.FC<{
   };
 
   const handleSubmit = async () => {
+    const loadingToastId = toast.loading("Updating user..."); // Create a loading toast
+
     try {
       let updatedFormData = { ...formData };
 
@@ -504,110 +533,102 @@ const UpdateProfileModal: React.FC<{
 
       if (userId) {
         await updateUser(updatedFormData, userId);
-        setSuccess(true);
-        setError(null);
+        toast.success("Profile updated successfully!", { id: loadingToastId }); // Success toast
       } else {
-        setError("User ID is missing.");
+        toast.error("User ID is missing.", { id: loadingToastId }); // Error toast
       }
     } catch (err) {
-      setError("Failed to update user. Please try again.");
-      setSuccess(false);
+      toast.error("Failed to update user. Please try again.", {
+        id: loadingToastId,
+      }); // Error toast
     }
   };
+
   return (
-    <>
-      <Modal
-        open={open}
-        closable
-        destroyOnClose
-        onOk={handleSubmit}
-        onCancel={onCancel}
-      >
-        <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
-          <div className="sm:mx-auto sm:w-full sm:max-w-md">
-            <img
-              alt="Your Company"
-              src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
-              className="mx-auto h-10 w-auto"
-            />
-            <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-              Update Your Account
-            </h2>
-          </div>
+    <Modal
+      open={open}
+      closable
+      destroyOnClose
+      onOk={handleSubmit}
+      onCancel={onCancel}
+    >
+      <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="sm:mx-auto sm:w-full sm:max-w-md">
+          <img
+            alt="Your Company"
+            src="../assets/logo.png"
+            className="mx-auto h-10 w-auto"
+          />
+          <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+            Update Your Account
+          </h2>
+        </div>
 
-          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-            <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-              <form className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="username"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Username
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      id="username"
-                      name="username"
-                      type="text"
-                      required
-                      value={formData.username}
-                      onChange={handleInputChange}
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
+        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
+          <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
+            <form className="space-y-6">
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Username
+                </label>
+                <div className="mt-2">
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    required
+                    value={formData.username}
+                    onChange={handleInputChange}
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
                 </div>
+              </div>
 
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Email address
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      autoComplete="email"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Email address
+                </label>
+                <div className="mt-2">
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    autoComplete="email"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                  />
                 </div>
-                <div>
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium leading-6 text-gray-900"
-                  >
-                    Profile Picture
-                  </label>
-                  <div className="mt-2">
-                    <input
-                      id="passwprofilePicord"
-                      name="profilePic"
-                      type="file"
-                      required
-                      onChange={handleImageChange}
-                      autoComplete="current-password"
-                      className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                    />
-                  </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="profilePic"
+                  className="block text-sm font-medium leading-6 text-gray-900"
+                >
+                  Profile Picture
+                </label>
+                <div className="mt-2">
+                  <input
+                    id="profilePic"
+                    name="profilePic"
+                    type="file"
+                    onChange={handleImageChange}
+                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+                  />
                 </div>
-                {error && <div className="text-red-500">{error}</div>}
-                {success && (
-                  <div className="text-green-500">
-                    User successfully created!
-                  </div>
-                )}
-              </form>
-            </div>
+              </div>
+            </form>
           </div>
         </div>
-      </Modal>
-    </>
+      </div>
+    </Modal>
   );
 };
