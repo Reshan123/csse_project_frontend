@@ -112,6 +112,7 @@ export default function PatientHome() {
   const mapMedicalRecordToDataType = (medicalRecord: MedicalRecord): DataType => ({
     key: medicalRecord.id || null,
     id: medicalRecord.id || '',
+    userId: medicalRecord.userId || '',
     patientId: medicalRecord.patientId,
     firstName: medicalRecord.firstName,
     lastName: medicalRecord.lastName,
