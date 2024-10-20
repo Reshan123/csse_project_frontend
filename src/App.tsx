@@ -13,10 +13,11 @@ import { useUserRole } from "./hooks/useUserRoleHook";
 import PatientSideBar from "./components/PatientSideBar";
 import Unauthorized from "./pages/Unauthorized";
 import Loader from "./components/Loader/Loader";
+import DoctorSideBar from "./components/DoctorSideBar";
 
 function App() {
   const navigate = useNavigate();
-  const { role} = useUserRole();
+  const { role } = useUserRole();
 
   useEffect(() => {
     const token = getAuthToken();
@@ -81,12 +82,13 @@ function App() {
           )
         }
       >
-        <Route path="/doctor/*" 
+        <Route
+          path="/doctor/*"
           element={
-            <StaffSideBar>
+            <DoctorSideBar>
               <DoctorRoutes />
-            </StaffSideBar>
-          } 
+            </DoctorSideBar>
+          }
         />
       </Route>
 
