@@ -114,13 +114,12 @@ const Home = () => {
           </div>
 
           <div className="space-y-8">
-            <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md">
+            {/* <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md">
               <h2 className="text-xl font-semibold mb-4">Calendar</h2>
-              {/* Placeholder for calendar component */}
               <div className="bg-teal-100 h-64 rounded-lg flex items-center justify-center">
                 <span className="text-teal-600">Calendar Component</span>
               </div>
-            </div>
+            </div> */}
 
             <div className="bg-gradient-to-r from-teal-500 to-teal-600 p-4 sm:p-6 rounded-xl shadow-md text-white">
               <h2 className="text-xl font-semibold mb-4">Need Help?</h2>

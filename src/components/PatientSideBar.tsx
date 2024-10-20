@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import logo from "../assets/logo.png";
 import {
   Dialog,
   DialogBackdrop,
@@ -230,12 +231,15 @@ export default function PatientSideBar({
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
           <div className="flex flex-grow flex-col overflow-y-auto bg-teal-700 pb-4 pt-5">
-            <div className="flex flex-shrink-0 items-center px-4">
+          <div className="flex flex-col flex-shrink-0 items-center justify-center px-4">
               <img
                 alt="Easywire logo"
-                src="https://tailwindui.com/plus/img/logos/mark.svg?color=cyan&shade=300"
-                className="h-8 w-auto"
+                src={logo}
+                className="h-16 w-auto"
               />
+              <h1 className="text-teal-200 font-bold">
+                Hospital Managment System
+              </h1>
             </div>
             <nav
               aria-label="Sidebar"
