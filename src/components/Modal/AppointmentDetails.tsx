@@ -337,6 +337,7 @@ const AppointmentDetails: FC<Props> = ({
                     className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md"
                     value={updatedAppointment?.appointmentDate.slice(0, 16)}
                     onChange={handleInputChange}
+                    min={new Date().toISOString().slice(0, 16)}
                     required
                   />
                 </div>

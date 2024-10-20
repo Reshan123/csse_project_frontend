@@ -30,7 +30,7 @@ const UpcomingAppointments = ({
                   <Calendar size={24} className="text-teal-600" />
                 </div>
                 <div>
-                  <p className="font-medium">{appointment.docName}</p>
+                  <p className="font-medium">Dr. {appointment.docName}</p>
                   <p className="text-sm text-gray-600">
                     {appointment.department}
                   </p>

@@ -135,6 +135,7 @@ const ScheduleForm = () => {
                 name="appointmentDate"
                 value={appointment.appointmentDate}
                 onChange={handleChange}
+                // min={new Date().toISOString().slice(0, 16)}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition duration-300"
                 required
               />
