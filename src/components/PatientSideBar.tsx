@@ -164,12 +164,15 @@ export default function PatientSideBar({
                   </button>
                 </div>
               </TransitionChild>
-              <div className="flex flex-shrink-0 items-center px-4">
+              <div className="flex flex-col flex-shrink-0 items-center justify-center px-4">
                 <img
                   alt="Easywire logo"
-                  src="https://tailwindui.com/plus/img/logos/mark.svg?color=cyan&shade=300"
+                  src="../src/assets/logo.png"
                   className="h-8 w-auto"
                 />
+                <h1 className="text-teal-200 font-bold">
+                  Hospital Managment System
+                </h1>
               </div>
               <nav
                 aria-label="Sidebar"

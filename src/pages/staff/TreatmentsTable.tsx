@@ -32,12 +32,12 @@ const TreatmentsTable: React.FC<TreatmentsTableProps> = ({ data, loading }) => {
       sorter: (a, b) => a.patientID.localeCompare(b.patientID),
       sortDirections: ["descend", "ascend"],
     },
-    {
-      title: "Appointment No",
-      dataIndex: "aptNo",
-      sorter: (a, b) => a.aptNo.localeCompare(b.aptNo),
-      sortDirections: ["descend", "ascend"],
-    },
+    // {
+    //   title: "Appointment No",
+    //   dataIndex: "aptNo",
+    //   sorter: (a, b) => a.aptNo.localeCompare(b.aptNo),
+    //   sortDirections: ["descend", "ascend"],
+    // },
     {
       title: "Treatment Type",
       dataIndex: "treatmentType",
@@ -52,31 +52,31 @@ const TreatmentsTable: React.FC<TreatmentsTableProps> = ({ data, loading }) => {
       title: "Contact Info",
       dataIndex: "contactInfo",
     },
-    {
-      title: "Action",
-      dataIndex: "action",
-      render: (_, record) => (
-        <Button type="link" onClick={() => handleViewClick(record)}>
-          View
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Action",
+    //   dataIndex: "action",
+    //   render: (_, record) => (
+    //     <Button type="link" onClick={() => handleViewClick(record)}>
+    //       View
+    //     </Button>
+    //   ),
+    // },
   ];
 
-    return (
-      <div className="bg-white">
-        <h2 className="text-xl font-medium leading-6 text-gray-900 p-4">
-          Treatment Details
-        </h2>
-        <Table<TreatmentType>
-          columns={columns}
-          dataSource={data}
-          loading={loading}
-          pagination={{ pageSize: 5 }}
-          rowKey="aptNo" // You can use a unique key, such as aptNo or patientID
-        />
-      </div>
-    );
+  return (
+    <div className="bg-white">
+      <h2 className="text-xl font-medium leading-6 text-gray-900 p-4">
+        Treatment Details
+      </h2>
+      <Table<TreatmentType>
+        columns={columns}
+        dataSource={data}
+        loading={loading}
+        pagination={{ pageSize: 5 }}
+        rowKey="aptNo" // You can use a unique key, such as aptNo or patientID
+      />
+    </div>
+  );
 };
 
 export default TreatmentsTable;

@@ -27,14 +27,13 @@ const TreatmentsForm: React.FC<TreatmentProps> = ({ record, onBack }) => {
 
     const { appointments } = useAppointments();
 
-    const data = appointments.filter(appointment => {
+    const filteredData = appointments.filter(appointment => {
+        return appointment.patientID === record.userId && appointment.status === "Scheduled";
+    });
 
-        return (appointment.patientID == record.userId)
-    })
+    console.log(filteredData);
 
-    console.log(data)
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prevData => ({
             ...prevData,
@@ -74,7 +73,6 @@ const TreatmentsForm: React.FC<TreatmentProps> = ({ record, onBack }) => {
         }
     };
 
-
     return (
         <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow-md">
             <h2 className="text-2xl font-bold mb-6 text-center">Treatment Form</h2>
@@ -93,15 +91,21 @@ const TreatmentsForm: React.FC<TreatmentProps> = ({ record, onBack }) => {
                 </div>
                 <div>
                     <label htmlFor="aptNo" className="block text-sm font-medium text-gray-700">Appointment Number</label>
-                    <input
-                        type="text"
+                    <select
                         id="aptNo"
                         name="aptNo"
                         value={formData.aptNo}
                         onChange={handleChange}
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                         required
-                    />
+                    >
+                        <option value="">Select Appointment Number</option>
+                        {filteredData.map((appointment) => (
+                            <option key={appointment.aptNo} value={appointment.aptNo}>
+                                {appointment.docName}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div>
                     <label htmlFor="treatmentType" className="block text-sm font-medium text-gray-700">Treatment Type</label>

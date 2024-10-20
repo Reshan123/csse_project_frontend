@@ -20,7 +20,6 @@ const TreatmentsList: React.FC<TreatmentsListProps> = ({ treatments, onBack }) =
                 {treatments.map((treatment, index) => (
                     <div key={index} className="border-b border-gray-200 pb-2">
                         <InfoItem label="Patient ID" value={treatment.patientID} />
-                        <InfoItem label="Appointment No" value={treatment.aptNo} />
                         <InfoItem label="Treatment Type" value={treatment.treatmentType} />
                         <InfoItem label="Prescription" value={treatment.prescription} />
                         <InfoItem label="Contact Info" value={treatment.contactInfo} />
