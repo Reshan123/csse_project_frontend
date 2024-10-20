@@ -13,10 +13,10 @@ import { Modal } from "antd";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase.ts";
 import { updateUser } from "../../api/Register/UpdateUserApi.js";
+import UpcomingAppointments, {
+} from "../../components/Appointment/UpcomingAppointments.js";
 import AllergiesList from "../../components/AllergyList.js";
-import UpcomingAppointments from "../../components/Appointment/UpcomingAppointments.js";
 import { getAppointments } from "../../api/User/GetAppointments.js";
-import AppointmentDetails from "../../components/Modal/AppointmentDetails.js";
 import TreatmentsTable from "./TreatmentsTable.js";
 import PopUp from "../../components/PopUp.js";
 import MedicalRecordForm from "../../components/Staff/AddMedicalRecord.js";
@@ -28,6 +28,7 @@ import { MedicalRecord } from "../../types/MedicalRecord.ts";
 import { DataType } from "../../components/Staff/RecordsTable.tsx";
 import PatientAppointments from "../../components/Appointment/PatientAppointments.tsx";
 import ViewRecord from "./ViewRecord.tsx";
+import AppointmentDetails from "../../components/Modal/AppointmentDetails.tsx";
 
 export default function PatientHome() {
   const { id } = useParams();
@@ -129,6 +130,7 @@ export default function PatientHome() {
       <ViewRecord
         record={mapMedicalRecordToDataType(user.medicalrecord)}
         onBack={handleBackToView}
+       
       />
     );
   }

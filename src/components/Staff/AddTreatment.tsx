@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DataType } from './RecordsTable';
 import axios from 'axios';
+import { useAppointments } from '../../hooks/useAppointmentHook';
 
 interface TreatmentProps {
     record: DataType;
@@ -23,6 +24,15 @@ const TreatmentsForm: React.FC<TreatmentProps> = ({ record, onBack }) => {
         prescription: '',
         contactInfo: '',
     });
+
+    const { appointments } = useAppointments();
+
+    const data = appointments.filter(appointment => {
+
+        return (appointment.patientID == record.userId)
+    })
+
+    console.log(data)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;

@@ -4,11 +4,9 @@ import StaffRoutes from "./views/StaffRoutes";
 import DoctorRoutes from "./views/DoctorRoutes";
 import Login from "./components/Login";
 import SignUp from "./components/Signup";
-// import Home from "./pages/Patient/Appointment/AppointmentHome";
 import { getAuthToken } from "./api/Register/LoginApi";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import StaffSideBar from "./components/StaffSideBar";
-// import StaffHome from "./pages/staff/StaffHome";
 import { useUserRole } from "./hooks/useUserRoleHook";
 import PatientSideBar from "./components/PatientSideBar";
 import Unauthorized from "./pages/Unauthorized";
@@ -17,37 +15,39 @@ import DoctorSideBar from "./components/DoctorSideBar";
 
 function App() {
   const navigate = useNavigate();
-  const { role } = useUserRole();
+  const { role, loading } = useUserRole();
+  const [initialNavigationDone, setInitialNavigationDone] = useState(false);
 
-  // useEffect(() => {
-  //   const token = getAuthToken();
-  //   if (token == null) {
-  //     navigate("/login");
+  // const changeRouteOnRole = useCallback(() => {
+  //   if (role === "ROLE_USER") {
+  //     navigate("/patient/home/");
+  //   } else if (role === "ROLE_ADMIN") {
+  //     navigate("/staff/");
+  //   } else if (role === "ROLE_MODERATOR") {
+  //     navigate("/doctor/");
   //   }
-  // }, [navigate]);
+  //   setInitialNavigationDone(true);
+  // }, [role, navigate]);
 
-  // if (loading) {
-  //   return <Loader />;
-  // }
+  useEffect(() => {
+    const token = getAuthToken();
+    if (token == null) {
+      navigate("/login");
+    }
+    // changeRouteOnRole();
+  }, [navigate, initialNavigationDone]);
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
 
     <Routes>
-      {/* <Route element={role == "ROLE_USER" ? <Outlet /> : null}>
-        <Route
-          path="/"
-          element={
-            <StaffSideBar>
-              <StaffHome></StaffHome>
-            </StaffSideBar>
-          }
-        />
-      </Route> */}
-
       <Route path="/login" element={<Login />} />
       <Route
         element={
-          role == "ROLE_USER" ? <Outlet /> : <Navigate to="/unauthorized" />
+          role === "ROLE_USER" ? <Outlet /> : <Navigate to="/unauthorized" />
         }
       >
         <Route
@@ -62,7 +62,7 @@ function App() {
 
       <Route
         element={
-          role == "ROLE_ADMIN" ? <Outlet /> : <Navigate to="/unauthorized" />
+          role === "ROLE_ADMIN" ? <Outlet /> : <Navigate to="/unauthorized" />
         }
       >
         <Route
@@ -77,7 +77,7 @@ function App() {
 
       <Route
         element={
-          role == "ROLE_MODERATOR" ? (
+          role === "ROLE_MODERATOR" ? (
             <Outlet />
           ) : (
             <Navigate to="/unauthorized" />

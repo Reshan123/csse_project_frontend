@@ -5,6 +5,7 @@ import Loader from "../components/Loader/Loader";
 interface UserRoleType {
   role: string;
   setRole: React.Dispatch<React.SetStateAction<string>>;
+  loading: boolean
 }
 
 export const UserRoleContext = createContext<UserRoleType | undefined>(
@@ -34,7 +35,7 @@ export const UserRoleProvider: React.FC<{ children: ReactNode }> = ({
   }
 
   return (
-    <UserRoleContext.Provider value={{ role, setRole }}>
+    <UserRoleContext.Provider value={{ role, setRole, loading }}>
       {children}
     </UserRoleContext.Provider>
   );

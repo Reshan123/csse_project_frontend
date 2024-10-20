@@ -38,7 +38,13 @@ export default function Login() {
         }
         // Handle other actions like redirect
         console.log("Login successful. Token saved in cookie.");
-        navigate("/");
+        if (firstRole === "ROLE_USER") {
+          navigate("/patient/home/");
+        } else if (firstRole === "ROLE_ADMIN") {
+          navigate("/staff/");
+        } else if (firstRole === "ROLE_MODERATOR") {
+          navigate("/doctor/");
+        }
         setError(null);
         setUsername("");
         setPassword("");
@@ -112,9 +118,8 @@ export default function Login() {
             <div>
               <button
                 type="submit"
-                className={`flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm ${
-                  loading ? "opacity-50" : "hover:bg-indigo-500"
-                }`}
+                className={`flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm ${loading ? "opacity-50" : "hover:bg-indigo-500"
+                  }`}
                 disabled={loading}
               >
                 {loading ? "Signing in..." : "Sign in"}

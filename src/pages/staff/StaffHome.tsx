@@ -71,7 +71,7 @@ const StaffHome = () => {
       }
     };
     fetchUsers();
-  }, [username]);
+  }, []);
 
   const mapUserToDataType = (user: User): DataType => {
     return {

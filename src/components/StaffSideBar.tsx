@@ -32,6 +32,7 @@ import {
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
 import { useNavigate } from "react-router-dom";
+import { useUserRole } from "../hooks/useUserRoleHook";
 import { getUserIdFromJwtCookie } from "../util/jwtDecode";
 import { LogOutIcon } from "lucide-react";
 
@@ -81,6 +82,7 @@ export default function StaffSideBar({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
+  const { setRole } = useUserRole()  
   const user = getUserIdFromJwtCookie();
 
   return (
@@ -285,11 +287,12 @@ export default function StaffSideBar({
                               .replace(
                                 /=.*/,
                                 "=;expires=" +
-                                  new Date().toUTCString() +
-                                  ";path=/"
+                                new Date().toUTCString() +
+                                ";path=/"
                               );
                           });
                           navigate("/login");
+                          setRole("")
                         }}
                       >
                         Logout

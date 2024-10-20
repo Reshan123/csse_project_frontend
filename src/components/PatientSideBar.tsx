@@ -35,6 +35,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { getUserIdFromJwtCookie } from "../util/jwtDecode";
 import { getPatientDetails } from "../api/User/PatientDetails";
 import { UserResponse } from "../types/User";
+import { useUserRole } from "../hooks/useUserRoleHook";
 
 const initialNavigation = [
   { name: "Home", href: "/patient/home/", icon: HomeIcon, current: false },
@@ -66,6 +67,7 @@ export default function PatientSideBar({
   const id = getUserIdFromJwtCookie()?.id;
   const [loading, setLoading] = useState<boolean>(false);
   const [user, setUser] = useState<UserResponse>();
+  const { setRole } = useUserRole();
 
   useEffect(() => {
     // id == undefined && setUserId(id);
@@ -383,11 +385,12 @@ export default function PatientSideBar({
                               .replace(
                                 /=.*/,
                                 "=;expires=" +
-                                  new Date().toUTCString() +
-                                  ";path=/"
+                                new Date().toUTCString() +
+                                ";path=/"
                               );
                           });
                           navigate("/login");
+                          setRole("");
                         }}
                       >
                         Logout

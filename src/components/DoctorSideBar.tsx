@@ -32,6 +32,7 @@ import {
   ShieldCheckIcon,
 } from "@heroicons/react/20/solid";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useUserRole } from "../hooks/useUserRoleHook";
 
 const initialNavigation = [
   { name: "Home", href: "/patient/home/", icon: HomeIcon, current: false },
@@ -59,6 +60,7 @@ export default function DoctorSideBar({
   const [navigation, setNavigation] = useState(initialNavigation);
   const navigate = useNavigate();
   const location = useLocation();
+  const { setRole } = useUserRole()
 
   React.useEffect(() => {
     setNavigation(prevNav =>
@@ -339,11 +341,12 @@ export default function DoctorSideBar({
                               .replace(
                                 /=.*/,
                                 "=;expires=" +
-                                  new Date().toUTCString() +
-                                  ";path=/"
+                                new Date().toUTCString() +
+                                ";path=/"
                               );
                           });
                           navigate("/login");
+                          setRole("")
                         }}
                       >
                         Logout

@@ -9,6 +9,7 @@ import TreatmentsList from './TreatmentsList';
 interface ViewRecordProps {
     record: DataType;
     onBack: () => void;
+   
 }
 
 const ViewRecord: React.FC<ViewRecordProps> = ({ record, onBack }) => {

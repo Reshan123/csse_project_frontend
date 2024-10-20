@@ -3,12 +3,11 @@ import { Table, Button } from "antd";
 import type { TableColumnsType } from "antd";
 import ViewRecord from "../../pages/staff/ViewRecord";
 import { useMedicalRecords } from "../../hooks/useMedicalRecordsHook";
-import axios from "axios";
-import { getAuthToken } from "../../api/Register/LoginApi";
 
 export interface DataType {
-  key: string | null;
+  key: string|null;
   id: string;
+  userId: string;
   patientId: string;
   firstName: string;
   lastName: string;
