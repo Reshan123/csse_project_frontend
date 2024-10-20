@@ -6,15 +6,17 @@ import { User as Doctor } from '../../../types/User';
 import { getAllDoctors } from '../../../api/User/GetDoctors';
 
 const ScheduleForm = () => {
-  const [doctor, setDoctor] = useState<Doctor[]>();
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [isFormValid, setIsFormValid] = useState<boolean>(false);
   const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+  const pName = getUserIdFromJwtCookie()?.sub;
 
   const [appointment, setAppointment] = useState({
     patientID: getUserIdFromJwtCookie()?.id,
     appointmentDate: '',
-    patientName: '',
+    patientName: pName || '',
+    docID: '',
     docName: '',
     reason: '',
     department: '',
@@ -26,11 +28,17 @@ const ScheduleForm = () => {
     'Gynecology', 'Dermatology', 'Ophthalmology', 'Psychiatry', 'General Surgery'
   ];
 
-  const doctors = [
-    'Dr. Emily Johnson', 'Dr. Michael Chen', 'Dr. Sarah Patel', 'Dr. David Kim',
-    'Dr. Lisa Rodriguez', 'Dr. James Wilson', 'Dr. Maria Garcia', 'Dr. Robert Taylor'
-  ];
-
+  useEffect(() => {
+    if (appointment.docID && doctors.length > 0) {
+      const selectedDoctor = doctors.find(doctor => doctor.id === appointment.docID);
+  
+      // If a doctor is found, set the docName in the appointment state
+      if (selectedDoctor) {
+        setAppointment(prev => ({ ...prev, docName: selectedDoctor.username }));
+      }
+    }
+  }, [appointment.docID, doctors]);
+  
   useEffect(() => {
     const fetchDoctors = async () => {
       setLoading(true);
@@ -45,11 +53,11 @@ const ScheduleForm = () => {
           return;
         }
 
-        const doctor = await getAllDoctors(token);
-        setDoctor(doctor);
+        const fetchedDoctors = await getAllDoctors(token);
+        setDoctors(fetchedDoctors);
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching user:", error);
+        console.error("Error fetching doctors:", error);
         setLoading(false);
       }
     };
@@ -58,7 +66,6 @@ const ScheduleForm = () => {
   }, []);
 
   useEffect(() => {
-    // Check if all fields are filled
     const isValid = Object.values(appointment).every(value => value !== '');
     setIsFormValid(isValid);
   }, [appointment]);
@@ -66,6 +73,10 @@ const ScheduleForm = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setAppointment(prev => ({ ...prev, [name]: value }));
+
+    if (name === 'department') {
+      setAppointment(prev => ({ ...prev, docName: '' }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -96,13 +107,14 @@ const ScheduleForm = () => {
       );
 
       console.log('Form submitted successfully:', response.data);
-      // Reset form or show success message here
       setShowConfirmation(false);
       window.location.reload();
     } catch (error) {
       console.error('Error submitting form', error);
     }
   };
+
+  const filteredDoctors = doctors.filter(doc => doc.department === appointment.department);
 
   return (
     <div className="bg-teal-800 min-h-screen p-5 sm:p-8">
@@ -167,17 +179,21 @@ const ScheduleForm = () => {
                 Doctor
               </label>
               <select
-                id="docName"
-                name="docName"
-                value={appointment.docName}
+                id="docID"
+                name="docID"
+                value={appointment.docID}
                 onChange={handleChange}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 transition duration-300"
                 required
               >
                 <option value="">Select Doctor</option>
-                {doctors.map((doc, index) => (
-                  <option key={index} value={doc}>{doc}</option>
-                ))}
+                {filteredDoctors.length > 0 ? (
+                  filteredDoctors.map((doc, index) => (
+                    <option key={index} value={doc.id}>Dr. {doc.username}</option>
+                  ))
+                ) : (
+                  <option disabled>No doctors available for this department</option>
+                )}
               </select>
             </div>
           </div>
@@ -217,7 +233,6 @@ const ScheduleForm = () => {
         </form>
       </div>
 
-      {/* Custom Confirmation Dialog */}
       {showConfirmation && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-white p-8 rounded-lg max-w-md w-full">

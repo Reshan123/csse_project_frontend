@@ -3,11 +3,14 @@ import { PencilIcon, TrashIcon } from 'lucide-react';
 import ModalWithBody from './ModalWithBody';
 import axios from 'axios';
 import { getAuthToken } from '../../api/Register/LoginApi';
+import { getAllDoctors } from '../../api/User/GetDoctors';
+import { User as Doctor } from '../../types/User';
 
 interface Appointment {
   aptNo: string;
   appointmentDate: string;
   docName: string;
+  docID: string;
   department: string;
   patientName: string;
   reason: string;
@@ -47,11 +50,40 @@ const AppointmentDetails: FC<Props> = ({
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateError, setUpdateError] = useState<string | null>(null);
   const [currentAppointment, setCurrentAppointment] = useState<Appointment | null>(appointment);
-
+  const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     setCurrentAppointment(appointment);
   }, [appointment]);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const token = getAuthToken();
+        if (!token) {
+          throw new Error('No authentication token found');
+        }
+        const fetchedDoctors = await getAllDoctors(token);
+        setDoctors(fetchedDoctors);
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
+    
+    fetchDoctors();
+  }, []);
+
+  useEffect(() => {
+    if (updatedAppointment) {
+      const isValid = 
+        updatedAppointment.appointmentDate &&
+        updatedAppointment.docID &&
+        updatedAppointment.department &&
+        updatedAppointment.reason;
+      setIsFormValid(!!isValid);
+    }
+  }, [updatedAppointment]);
 
   if (!currentAppointment && !appointment) return null;
 
@@ -63,9 +95,21 @@ const AppointmentDetails: FC<Props> = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     if (updatedAppointment) {
-      setUpdatedAppointment({
-        ...updatedAppointment,
-        [e.target.name]: e.target.value,
+      const { name, value } = e.target;
+      setUpdatedAppointment(prev => {
+        if (!prev) return null;
+        const updated = { ...prev, [name]: value };
+        if (name === 'department') {
+          updated.docID = '';
+          updated.docName = '';
+        }
+        if (name === 'docID') {
+          const selectedDoctor = doctors.find(doc => doc.id === value);
+          if (selectedDoctor) {
+            updated.docName = selectedDoctor.username;
+          }
+        }
+        return updated;
       });
     }
   };
@@ -94,12 +138,12 @@ const AppointmentDetails: FC<Props> = ({
         onUpdate(response.data);
         setIsUpdateModalOpen(false);
         setOpen(true);
+        window.location.reload();
       } catch (error) {
         console.error('Error updating appointment:', error);
         setUpdateError('Failed to update appointment. Please try again.');
       } finally {
         setIsUpdating(false);
-        window.location.reload();
       }
     }
   };
@@ -115,7 +159,7 @@ const AppointmentDetails: FC<Props> = ({
         throw new Error('No authentication token found');
       }
 
-      const response = await axios.delete(
+      await axios.delete(
         `/api/appointments/delete/${currentAppointment!.aptNo}`,
         {
           headers: {
@@ -123,10 +167,9 @@ const AppointmentDetails: FC<Props> = ({
           },
         }
       );
-      console.log(response.data);
       setOpen(false);
       setIsRemoveConfirmationOpen(false);
-      // You might want to add a callback here to refresh the appointment list
+      window.location.reload();
     } catch (error) {
       console.error('Error deleting appointment:', error);
       // Handle error (e.g., show an error message to the user)
@@ -158,6 +201,8 @@ const AppointmentDetails: FC<Props> = ({
   const displayAppointment = currentAppointment || appointment;
 
   const isPending = displayAppointment?.status.toLowerCase() === 'pending';
+
+  const filteredDoctors = doctors.filter(doc => doc.department === updatedAppointment?.department);
 
   return (
     <>
@@ -258,7 +303,6 @@ const AppointmentDetails: FC<Props> = ({
         </div>
       </ModalWithBody>
 
-      {/* Update Modal */}
       <ModalWithBody
         open={isUpdateModalOpen}
         setOpen={setIsUpdateModalOpen}
@@ -293,27 +337,8 @@ const AppointmentDetails: FC<Props> = ({
                     className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md"
                     value={updatedAppointment?.appointmentDate.slice(0, 16)}
                     onChange={handleInputChange}
+                    required
                   />
-                </div>
-              </div>
-
-              <div className="sm:col-span-6">
-                <label htmlFor="docName" className="block text-sm font-medium text-gray-700">
-                  Doctor Name
-                </label>
-                <div className="mt-1">
-                  <select
-                    name="docName"
-                    id="docName"
-                    className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                    value={updatedAppointment?.docName}
-                    onChange={handleInputChange}
-                  >
-                    <option value="">Select Doctor</option>
-                    {doctors.map((doc, index) => (
-                      <option key={index} value={doc}>{doc}</option>
-                    ))}
-                  </select>
                 </div>
               </div>
 
@@ -328,12 +353,39 @@ const AppointmentDetails: FC<Props> = ({
                     className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md"
                     value={updatedAppointment?.department}
                     onChange={handleInputChange}
+                    required
                   >
                     <option value="">Select Department</option>
                     {departments.map((dept, index) => (
                       <option key={index} value={dept}>{dept}</option>
                     ))}
                   </select>
+                </div>
+              </div>
+
+              <div className="sm:col-span-6">
+                <label htmlFor="docID" className="block text-sm font-medium text-gray-700">
+                  Doctor
+                </label>
+                <div className="mt-1">
+                  <select
+                    name="docID"
+                    id="docID"
+                    className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                    value={updatedAppointment?.docID}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">Select Doctor</option>
+                    {filteredDoctors.length > 0 ? (
+                      filteredDoctors.map((doc, index) => (
+                          <option key={index} value={doc.id}>Dr. {doc.username}</option>
+                        ))
+                      ) : (
+                        <option disabled>No doctors available for this department</option>
+                      )
+                    }
+                    </select>
                 </div>
               </div>
 
@@ -349,6 +401,7 @@ const AppointmentDetails: FC<Props> = ({
                     className="shadow-sm focus:ring-teal-500 focus:border-teal-500 block w-full sm:text-sm border-gray-300 rounded-md"
                     value={updatedAppointment?.reason}
                     onChange={handleInputChange}
+                    required
                   />
                 </div>
               </div>
@@ -369,8 +422,10 @@ const AppointmentDetails: FC<Props> = ({
             </button>
             <button
               onClick={handleUpdate}
-              className="w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-teal-600 hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
-              disabled={isUpdating}
+              className={`w-full sm:w-auto px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+                isFormValid ? 'bg-teal-600 hover:bg-teal-700' : 'bg-gray-300 cursor-not-allowed'
+              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500`}
+              disabled={isUpdating || !isFormValid}
             >
               {isUpdating ? 'Updating...' : 'Update Appointment'}
             </button>

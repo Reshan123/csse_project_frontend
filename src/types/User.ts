@@ -6,8 +6,8 @@ export interface User {
     email: string;
     password: string;
     department?: string;
-  role: string[];
-  link?: string;
+    role: string[];
+    link?: string;
 }
 
 export interface UserResponse {

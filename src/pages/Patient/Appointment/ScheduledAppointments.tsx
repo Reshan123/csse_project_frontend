@@ -108,7 +108,7 @@ const AppointmentMainContent = () => {
                     onClick={() => openAppointmentDetails(apt)} // Handle click to open modal with details
                   >
                     <div>
-                      <p className="font-semibold text-gray-800">{apt.docName}</p>
+                      <p className="font-semibold text-gray-800">Dr. {apt.docName}</p>
                       <p className="text-sm text-gray-500">{apt.department}</p>
                       <p className="text-sm text-gray-600">
                         {new Date(apt.appointmentDate).toLocaleDateString()} at{" "}
@@ -163,7 +163,7 @@ const AppointmentMainContent = () => {
                     onClick={() => openAppointmentDetails(apt)} // Handle click to open modal with details
                   >
                     <div>
-                      <p className="font-semibold text-gray-800">{apt.docName}</p>
+                      <p className="font-semibold text-gray-800">Dr. {apt.docName}</p>
                       <p className="text-sm text-gray-500">{apt.department}</p>
                       <p className="text-sm text-gray-600">
                         {new Date(apt.appointmentDate).toLocaleDateString()} at{" "}
