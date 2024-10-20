@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 
-// Your Firebase configuration object (from Firebase Console)
 const firebaseConfig = {
   apiKey: "AIzaSyDcWBfcVdcQxKUqOn_ZgId0rxCJnWjEuJA",
   authDomain: "csse-663ab.firebaseapp.com",
@@ -12,10 +11,8 @@ const firebaseConfig = {
   measurementId: "G-Q04F4080BW"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firebase Storage
 const storage = getStorage(app);
 
 export { storage };

@@ -16,7 +16,7 @@ import Loader from "./components/Loader/Loader";
 
 function App() {
   const navigate = useNavigate();
-  const { role, loading } = useUserRole();
+  const { role} = useUserRole();
 
   useEffect(() => {
     const token = getAuthToken();
@@ -25,9 +25,9 @@ function App() {
     }
   }, [navigate]);
 
-  if (loading) {
-    return <Loader />;
-  }
+  // if (loading) {
+  //   return <Loader />;
+  // }
 
   return (
     <Routes>

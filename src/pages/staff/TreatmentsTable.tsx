@@ -64,8 +64,8 @@ const TreatmentsTable: React.FC<TreatmentsTableProps> = ({ data, loading }) => {
   ];
 
     return (
-      <div>
-        <h2 className="text-xl font-medium leading-6 text-gray-900 p-3">
+      <div className="bg-white">
+        <h2 className="text-xl font-medium leading-6 text-gray-900 p-4">
           Treatment Details
         </h2>
         <Table<TreatmentType>

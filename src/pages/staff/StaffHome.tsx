@@ -16,6 +16,7 @@ import {
 import {
   BriefcaseMedical,
   ClipboardPlus,
+  HospitalIcon,
   PersonStanding,
   ScaleIcon,
   SyringeIcon,
@@ -43,6 +44,7 @@ const StaffHome = () => {
   const [users, setUsers] = React.useState<User[] | null>(null);
   const [loading, setLoading] = React.useState(false);
 
+  const user = getUserIdFromJwtCookie();
   console.log("Token", getUserIdFromJwtCookie());
 
   useEffect(() => {
@@ -86,19 +88,6 @@ const StaffHome = () => {
       icon: BriefcaseMedical,
       amount: "590",
     },
-    {
-      name: "Doctor Appointments",
-      href: "#",
-      icon: ClipboardPlus,
-      amount: "600",
-    },
-    {
-      name: "Medical Treatments",
-      href: "#",
-      icon: SyringeIcon,
-      amount: "1409",
-    },
-    // More items...
   ];
   const transactions = [
     {
@@ -135,17 +124,17 @@ const StaffHome = () => {
                         className="h-16 w-16 rounded-full sm:hidden"
                       />
                       <h1 className="ml-3 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:leading-9">
-                        Good morning, {username}
+                        Good morning, {user?.sub}
                       </h1>
                     </div>
                     <dl className="mt-6 flex flex-col sm:ml-3 sm:mt-1 sm:flex-row sm:flex-wrap">
                       <dt className="sr-only">Company</dt>
                       <dd className="flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6">
-                        <BuildingOfficeIcon
+                        <HospitalIcon
                           aria-hidden="true"
                           className="mr-1.5 h-5 w-5 flex-shrink-0 text-gray-400"
                         />
-                        {hospital}
+                        {user?.email}
                       </dd>
                       <dt className="sr-only">Account status</dt>
                       <dd className="mt-3 flex items-center text-sm font-medium capitalize text-gray-500 sm:mr-6 sm:mt-0">
@@ -284,7 +273,7 @@ const StaffHome = () => {
                 users.map((user) => (
                   <li key={user.id}>
                     <a
-                      href={`staff/home/${user.id}`}
+                      href={`/home/${user.id}`}
                       className="block bg-white px-4 py-4 hover:bg-gray-50"
                     >
                       <span className="flex items-center space-x-4">

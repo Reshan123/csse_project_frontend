@@ -34,7 +34,7 @@ import {
 import { useNavigate } from "react-router-dom";
 
 const navigation = [
-  // { name: "Home", href: "/", icon: HomeIcon, current: true },
+  { name: "Home", href: "/staff", icon: HomeIcon, current: true },
   // {
   //   name: "Appoinments",
   //   href: "/patient/appointment/",
