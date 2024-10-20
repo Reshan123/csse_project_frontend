@@ -7,15 +7,27 @@ import StaffHome from "../pages/staff/StaffHome";
 
 const StaffRoutes = () => {
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<StaffHome />} />
-        <Route path="/home/:id" element={<PatientHome />} />
-        <Route path="/addRecord" element={<MedicalRecordForm />} />
-        <Route path="/viewRecords" element={<RecordsTable />} />
-        <Route path="/report" element={<ReportScreen />} />
-      </Routes>
-    </>
+    <Routes>
+      <Route path="/" element={<StaffHome />} />
+      <Route path="/home/:id" element={<PatientHome />} />
+      <Route
+        path="/addRecord"
+        element={
+          <div className="min-h-screen bg-[#0b4541] flex items-center justify-center">
+            <MedicalRecordForm />
+          </div>
+        }
+      />
+      <Route
+        path="/viewRecords"
+        element={
+          <div className="min-h-screen bg-[#0b4541] items-center justify-center mt-10 ">
+            <RecordsTable />
+          </div>
+        }
+      />
+      <Route path="/report" element={<ReportScreen />} />
+    </Routes>
   );
 };
 

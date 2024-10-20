@@ -1,10 +1,4 @@
 import {
-  // CheckIcon,
-  // HandThumbUpIcon,
-  PaperClipIcon,
-  // UserIcon,
-} from "@heroicons/react/20/solid";
-import {
   BanknotesIcon,
   ChevronRightIcon,
   PlusIcon,
@@ -16,11 +10,9 @@ import { getPatientDetails } from "../../api/User/PatientDetails";
 import { User, UserResponse } from "../../types/User";
 import { calculateAge } from "../../util/AgeCalculator";
 import { Modal } from "antd";
-import { createUser } from "../../api/Register/SignupApi";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "../../firebase.ts";
 import { updateUser } from "../../api/Register/UpdateUserApi.js";
-import AllergiesList from "../../components/AllergyList.js";
 import UpcomingAppointments, {
 } from "../../components/Appointment/UpcomingAppointments.js";
 import { getAppointments } from "../../api/User/GetAppointments.js";
@@ -28,6 +20,9 @@ import AppointmentDetails from "../../components/Modal/AppointmentDetails.js";
 import TreatmentsTable from "./TreatmentsTable.js";
 import PopUp from "../../components/PopUp.js";
 import MedicalRecordForm from "../../components/Staff/AddMedicalRecord.js";
+import ViewRecord from "./ViewRecord.tsx";
+import { DataType } from "../../components/Staff/RecordsTable.tsx";
+import { MedicalRecord } from "../../types/MedicalRecord.ts";
 import PatientAppointments from "../../components/Appointment/PatientAppointments.tsx";
 import PatientAppointmentDetails from "../../components/Modal/PatientAppointmentDetails.tsx";
 const attachments = [
@@ -47,6 +42,16 @@ export default function PatientHome() {
     useState<boolean>(false);
   const [selectedAppointment, setSelectedAppointment] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const [isViewingRecord, setIsViewingRecord] = useState(false);
+
+  const handleBackToView = () => {
+    setIsViewingRecord(false)
+  };
+
+  const handleViewRecord = () => {
+    setIsViewingRecord(true)
+  }
 
   const openAppointmentDetails = (appointment: any) => {
     setSelectedAppointment(appointment);
@@ -99,6 +104,33 @@ export default function PatientHome() {
     }
   };
 
+
+  const mapMedicalRecordToDataType = (medicalRecord: MedicalRecord): DataType => ({
+    key: medicalRecord.id || null,
+    id: medicalRecord.id || '',
+    patientId: medicalRecord.patientId,
+    firstName: medicalRecord.firstName,
+    lastName: medicalRecord.lastName,
+    dateOfBirth: medicalRecord.dateOfBirth,
+    gender: medicalRecord.gender,
+    contactNumber: medicalRecord.contactNumber,
+    address: medicalRecord.address,
+    allergies: medicalRecord.allergies,
+    ongoingMedications: medicalRecord.ongoingMedications,
+    emergencyContactName: medicalRecord.emergencyContactName,
+    emergencyContactNumber: medicalRecord.emergencyContactNumber,
+  });
+
+  if (isViewingRecord && user?.medicalrecord) {
+    return (
+      <ViewRecord
+        record={mapMedicalRecordToDataType(user.medicalrecord)}
+        onBack={handleBackToView}
+      />
+    );
+  }
+
+
   return (
     <>
       <PatientAppointmentDetails
@@ -106,7 +138,7 @@ export default function PatientHome() {
         open={appointmentDetailsModalOpen}
         setOpen={setAppointmentDetailsModalOpen}
         appointment={selectedAppointment}
-        onUpdate={() => {}}
+        onUpdate={() => { }}
       />
       <PopUp
         isOpen={isOpened}
@@ -249,14 +281,16 @@ export default function PatientHome() {
                                 {user?.medicalrecord?.contactNumber}
                               </dd>
                             </div>
-                            <div className="sm:col-span-2">
-                              <dd className="mt-1 text-sm text-gray-900">
-                                <AllergiesList
-                                  list={user?.medicalrecord?.allergies || []}
-                                />
-                              </dd>
-                            </div>
                           </dl>
+                        </div>
+                        <div className="mt-6 flex justify-center">
+                          <button
+                            type="button"
+                            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            onClick={handleViewRecord}
+                          >
+                            View Record
+                          </button>
                         </div>
                       </div>
                     </section>

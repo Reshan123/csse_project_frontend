@@ -1,12 +1,13 @@
-// RecordsTable.tsx
 import React, { useState } from "react";
 import { Table, Button } from "antd";
 import type { TableColumnsType } from "antd";
-import ViewRecord from "../../pages/staff/ViewRecord"; // Import the ViewRecord component
+import ViewRecord from "../../pages/staff/ViewRecord";
 import { useMedicalRecords } from "../../hooks/useMedicalRecordsHook";
+import axios from "axios";
+import { getAuthToken } from "../../api/Register/LoginApi";
 
 export interface DataType {
-  key: string;
+  key: string | null;
   id: string;
   patientId: string;
   firstName: string;
@@ -16,14 +17,14 @@ export interface DataType {
   contactNumber: string;
   address?: string;
   allergies?: string[];
-  treatments?:string[]
+  treatments?: string[]
   ongoingMedications?: string[];
   emergencyContactName?: string;
   emergencyContactNumber?: string;
 }
 
 const RecordsTable: React.FC = () => {
-  const { data, loading } = useMedicalRecords(); // Add refetch function
+  const { data, loading, deleteMedicalRecord } = useMedicalRecords();
   const [selectedRecord, setSelectedRecord] = useState<DataType | null>(null);
 
   const handleViewClick = (record: DataType) => {
@@ -33,6 +34,13 @@ const RecordsTable: React.FC = () => {
   const handleBack = async () => {
     setSelectedRecord(null);
   };
+
+
+
+  const handleDeleteClick = async (record: DataType) => {
+    deleteMedicalRecord(record);
+  };
+
 
   const formattedData = data?.map(record => ({
     ...record,
@@ -84,23 +92,44 @@ const RecordsTable: React.FC = () => {
       title: "Action",
       dataIndex: "action",
       render: (_, record) => (
-        <Button type="link" onClick={() => handleViewClick(record)}>
-          View
-        </Button>
+        <>
+          <Button type="link" onClick={() => handleViewClick(record)}>
+            View
+          </Button>
+          <Button type="link" danger onClick={() => handleDeleteClick(record)}>
+            Delete
+          </Button>
+        </>
       ),
     },
   ];
 
+  // Inline styles for the table
+  const tableHeaderStyle = {
+    backgroundColor: '#0f766e',
+    color: 'white',
+  };
+
   return selectedRecord ? (
     <ViewRecord record={selectedRecord} onBack={handleBack} />
   ) : (
-    <Table<DataType>
-      columns={columns}
-      dataSource={formattedData}
-      loading={loading}
-      pagination={{ pageSize: 5 }}
-      rowKey="key"
-    />
+    <div style={{ backgroundColor: '#0b4541', padding: '16px' }}>
+      <Table<DataType>
+        columns={columns}
+        dataSource={formattedData}
+        loading={loading}
+        pagination={{ pageSize: 5 }}
+        rowKey="id" // Use 'id' as the rowKey
+        components={{
+          header: {
+            cell: (props: any) => (
+              <th {...props} style={{ ...props.style, ...tableHeaderStyle }} />
+            ),
+          },
+        }}
+      />
+
+    </div>
   );
 };
 
