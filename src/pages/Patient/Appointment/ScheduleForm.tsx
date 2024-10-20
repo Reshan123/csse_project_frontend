@@ -7,7 +7,7 @@ console.log("Token", getUserIdFromJwtCookie());
 
 const ScheduleForm = () => {
   const [appointment, setAppointment] = useState({
-    patientID: getUserIdFromJwtCookie(),
+    patientID: getUserIdFromJwtCookie()?.id,
     appointmentDate: '',
     patientName: '',
     docName: '',

@@ -3,17 +3,19 @@ import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { getAuthToken } from "../api/Register/LoginApi";
 
-interface DecodedToken extends JwtPayload {
-  id: string; 
+export interface DecodedToken extends JwtPayload {
+    id: string; 
+    sub: string;
+    email: string;
 }
 
-export const getUserIdFromJwtCookie = (): string | null => {
+export const getUserIdFromJwtCookie = (): DecodedToken | null => {
   const token = getAuthToken();
   if (!token) return null;
 
   try {
     const decoded = jwtDecode<DecodedToken>(token);
-    return decoded.id; 
+    return decoded; 
   } catch (error) {
     console.error("Invalid JWT:", error);
     return null;
